@@ -19,40 +19,41 @@ export class AuthController implements IAuthController{
             }
             const {name,email,phone,password}=parsed.data
             const {message}=await this._authService.register(name,email,phone,password)
+            res.status(HttpStatus.OK).json({message})
         } catch (error) {
             next(error)
         }
     }
 
-    async login(req: Request, Res: Response, next: NextFunction): Promise<void> {
+    async login(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             
         } catch (error) {
             
         }
     }
-    async verifyOtp(req: Request, Res: Response, next: NextFunction): Promise<void> {
+    async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            console.log(req.body)
+        } catch (error) {
+            
+        }
+    }
+    async logOut(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             
         } catch (error) {
             
         }
     }
-    async logOut(req: Request, Res: Response, next: NextFunction): Promise<void> {
+    async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             
         } catch (error) {
             
         }
     }
-    async forgotPassword(req: Request, Res: Response, next: NextFunction): Promise<void> {
-        try {
-            
-        } catch (error) {
-            
-        }
-    }
-    async resendOtp(req: Request, Res: Response, next: NextFunction): Promise<void> {
+    async resendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             
         } catch (error) {

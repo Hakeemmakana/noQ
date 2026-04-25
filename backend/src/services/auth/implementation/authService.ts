@@ -1,15 +1,20 @@
 import redisClient from "../../../config/redis"
 import HttpStatus from "../../../constants/httpStatusCode"
-import { REGISTRATION_ALREADY_INITATED, USER_ALREADY_EXISTS } from "../../../constants/messages"
+import { OTP_SENT_SUCCESSFULLY, REGISTRATION_ALREADY_INITATED, USER_ALREADY_EXISTS } from "../../../constants/messages"
 import { AppError } from "../../../middleware/errorHandler"
 import bcrypt from 'bcrypt'
 import { IAuthService } from "../interface/IAuthService"
-import { injectable } from "inversify"
+import { inject, injectable } from "inversify"
 import { generateOtp } from "../../../utils/generateOtp"
+import { TYPES } from "../../../DI/types"
+import {IEmailService}from '../../emailService/interface/IEmailService'
     const saltRounds=Number(process.env.BCRYPT_SALT_ROUNDS||10)
 @injectable()
 export class AuthService implements IAuthService{
-    constructor(){
+    constructor(
+         @inject(TYPES.EmailService) private _emailService:IEmailService
+         
+    ){
     }
 
     async register(name: string,email: string,phone: string,password: string):Promise<{message:string}>{
@@ -19,10 +24,9 @@ export class AuthService implements IAuthService{
         // }
         const redisDataKey=`userData:${email}`
         const redisOtpKey=`otp:${email}`
-        
         const initiatedProcess=await redisClient.get(redisDataKey)
         if(initiatedProcess){
-            throw new AppError(REGISTRATION_ALREADY_INITATED,HttpStatus.CONFLICT)
+            // throw new AppError(REGISTRATION_ALREADY_INITATED,HttpStatus.CONFLICT)
         }
         const hashedPassword=await bcrypt.hash(password,saltRounds)
         const {otp,hashedOtp}=generateOtp()
@@ -34,8 +38,9 @@ export class AuthService implements IAuthService{
         }
         await redisClient.setEx(redisDataKey,600,JSON.stringify(userData))
         await redisClient.setEx(redisOtpKey,120,hashedOtp)
-        console.log(hashedPassword,password)
-        return {message:"success"}
+        await this._emailService.sendOtpMail(email,otp)
+        return {message:OTP_SENT_SUCCESSFULLY}
+        
 
     }
 }
