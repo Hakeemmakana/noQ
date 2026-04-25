@@ -10,5 +10,6 @@ export interface IUser{
     email:string;
     googleId:string;
     isAdmin:boolean;
+    isDeleted:boolean
 
 }

@@ -12,7 +12,8 @@ const userSchema=new Schema<IUser>({
     googleId:{type:String},
     age:{type:Number},
     dob:{type:Date},
-    isVerified:{type:Boolean,default:false},
+    isVerified:{type:Boolean,default:true},
+    isDeleted:{type:Boolean,default:false},
     phone:{type:String}
 
 

@@ -13,7 +13,7 @@ const container=new Container()
 
 
 //Authentication
-// container.bind<IAuthRepository>(TYPES.AuthRepository).to(AuthRepository)
+container.bind<IAuthRepository>(TYPES.AuthRepository).to(AuthRepository)
 container.bind<IAuthService>(TYPES.AuthService).to(AuthService)
 container.bind<IAuthController>(TYPES.AuthController).to(AuthController)
 

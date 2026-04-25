@@ -32,11 +32,15 @@ export class AuthController implements IAuthController{
             
         }
     }
-    async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
+    verifyOtp=async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
         try {
-            console.log(req.body)
+            // console.log(req.body)
+            const {email,otp,purpose}=req.body
+            console.log(this)
+            const {message,userId}=await this._authService.verifyOtp(email.trim(),otp.trim(),purpose)
+            console.log(message,userId)
         } catch (error) {
-            
+            console.log(error)
         }
     }
     async logOut(req: Request, res: Response, next: NextFunction): Promise<void> {

@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.get("/test", (req, res) => {
     console.log("🔥 TEST ROUTE HIT");
-    res.send("OK");
+    res.send("OKk");
 });
 app.use('/',userRouter)
 app.use('/auth',auth)
