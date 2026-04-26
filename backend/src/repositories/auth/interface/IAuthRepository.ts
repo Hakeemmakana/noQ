@@ -1,5 +1,4 @@
 import { UserDocument } from "../../../models/user";
-import { IUser } from "../../../types/user";
 
 export interface IAuthRepository {
     register(userData: {

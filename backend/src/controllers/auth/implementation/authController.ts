@@ -6,6 +6,9 @@ import { AppError } from "../../../middleware/errorHandler";
 import { IAuthService } from "../../../services/auth/interface/IAuthService";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
+import { emailRegex } from "../../../constants/regex";
+import { INVALID_EMAIL, LOGGED_OUT_MESSAGE } from "../../../constants/messages";
+import strict from "node:assert/strict";
 
 @injectable()
 export class AuthController implements IAuthController{
@@ -34,25 +37,33 @@ export class AuthController implements IAuthController{
     }
     verifyOtp=async (req: Request, res: Response, next: NextFunction): Promise<void>=> {
         try {
-            // console.log(req.body)
             const {email,otp,purpose}=req.body
-            console.log(this)
             const {message,userId}=await this._authService.verifyOtp(email.trim(),otp.trim(),purpose)
-            console.log(message,userId)
         } catch (error) {
-            console.log(error)
+            next(error)
         }
     }
     async logOut(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+            res.clearCookie('refresh_token',{
+                httpOnly:true,
+                secure:false,
+                sameSite:'strict'
+            });
+            res.status(HttpStatus.OK).json({message:LOGGED_OUT_MESSAGEgit })
+           
         } catch (error) {
-            
+            next(error)
         }
     }
     async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+             const email=req.body.email.trim();
+            if(!email||!emailRegex.test(email)){
+                throw new AppError(INVALID_EMAIL,HttpStatus.BAD_REQUEST);
+            }
+            const {status,message}=await this._authService.forgetPassword(email);
+            res.status(status).json({message:message});
         } catch (error) {
             
         }

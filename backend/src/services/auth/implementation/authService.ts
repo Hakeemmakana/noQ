@@ -1,6 +1,9 @@
 import redisClient from "../../../config/redis"
 import HttpStatus from "../../../constants/httpStatusCode"
-import { INVALID_OTP, OTP_EXPIRED, OTP_SENT_SUCCESSFULLY, OTP_VERIFIED_SUCCESSFULLY, REGISTRATION_ALREADY_INITATED, SIGNUP_SESSION_EXPIRED, USER_ALREADY_EXISTS, USER_NOT_FOUND } from "../../../constants/messages"
+import { INVALID_OTP, OTP_EXPIRED, OTP_SENT_SUCCESSFULLY, OTP_VERIFIED_SUCCESSFULLY,
+         REGISTRATION_ALREADY_INITATED, SIGNUP_SESSION_EXPIRED, USER_ALREADY_EXISTS,
+         USER_NOT_FOUND,
+          } from "../../../constants/messages"
 import { AppError } from "../../../middleware/errorHandler"
 import bcrypt from 'bcrypt'
 import { IAuthService } from "../interface/IAuthService"
@@ -28,25 +31,20 @@ export class AuthService implements IAuthService {
 
         const redisDataKey = `userData:${email}`
         const redisOtpKey = `otp:${email}`
-        console.log('otp1',redisOtpKey)
         const initiatedProcess = await redisClient.get(redisDataKey)
-        const storeOtp=await redisClient.get(redisOtpKey)
         if (initiatedProcess) {
             throw new AppError(REGISTRATION_ALREADY_INITATED,HttpStatus.CONFLICT)
         }
         const hashedPassword = await bcrypt.hash(password, saltRounds)
         const { otp, hashedOtp } = generateOtp()
-        console.log(otp,hashedOtp)
         const userData = {
             name,
             email,
             phone,
-            password
+            password:hashedPassword
         }
         await redisClient.setEx(redisDataKey, 600, JSON.stringify(userData))
         await redisClient.setEx(redisOtpKey, 120, hashedOtp)
-        const s=await redisClient.get(redisOtpKey)
-        console.log('ssss',s)
         await this._emailService.sendOtpMail(email, otp)  
 
         return { message: OTP_SENT_SUCCESSFULLY }
@@ -82,18 +80,29 @@ export class AuthService implements IAuthService {
                 break;
             }
             case 'other':{
-            //     const user=await this.authRepository.findByEmail(email)
-            //     if(!user){
-            //         throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND);
-            //     }
-            //     const token=generateResetTocken(user._id.toString());
-            //     response.token=token;
-            //     break;
+                // const user=await this.authRepository.findByEmail(email)
+                // if(!user){
+                //     throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND);
+                // }
+                // const token=generateResetTocken(user._id.toString());
+                // response.token=token;
+                // break;
             }
         }
         await redisClient.del(redisOtpKey)
         await redisClient.del(redisDataKey)
         return response
+    }
+    forgetPassword=async(email: string): Promise<{status:number, message: string }> =>{
+        const user=await this._authRepository.findByEmail(email)
+        if(!user){
+            throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND)
+        }
+        const {otp,hashedOtp}=generateOtp()
+        const redisOtpKey=`email:${hashedOtp}`;
+        await redisClient.setEx(redisOtpKey,120,hashedOtp)
+        await this._emailService.sendOtpMail(email,otp)
+        return {status:HttpStatus.OK,message:OTP_SENT_SUCCESSFULLY}
     }
 
 }

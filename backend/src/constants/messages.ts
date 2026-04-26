@@ -8,4 +8,9 @@ export const OTP_EXPIRED="OTP has expired";
 export const INVALID_OTP="Invalid OTP";
 export const OTP_VERIFIED_SUCCESSFULLY = "Your OTP has been verified successfully.";
 export const SIGNUP_SESSION_EXPIRED = "Signup session expired"
+export const LOGGED_OUT_MESSAGE = "Logged out successfully."
+
+
+//email
+export const INVALID_EMAIL = 'Invalid email address'
 

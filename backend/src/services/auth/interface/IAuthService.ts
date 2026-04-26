@@ -5,5 +5,5 @@ export interface IAuthService{
     token: string;
     userId: string;
   }>;
-  
+  forgetPassword(email:string):Promise<{status:number,message:string}>
 }
