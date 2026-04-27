@@ -104,5 +104,19 @@ export class AuthService implements IAuthService {
         await this._emailService.sendOtpMail(email,otp)
         return {status:HttpStatus.OK,message:OTP_SENT_SUCCESSFULLY}
     }
+    resendOtp=async(email: string, purpose: string): Promise<{ status: number; message: string }>=> {
+        const redisDataKey=`userData:${email}`
+        const userExist=purpose==='register'
+        ? await redisClient.get(redisDataKey)
+        : await this._authRepository.findByEmail(email);
+        if(!userExist){
+            throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND)
+        }
+        const{otp,hashedOtp}=generateOtp()
+        const redisOtpKey=`otp:${email}`
+        await redisClient.setEx(redisOtpKey,120,hashedOtp)
 
+        await this._emailService.resendOtpMail(email,otp)
+        return {status:HttpStatus.OK,message:OTP_SENT_SUCCESSFULLY}
+    }
 }

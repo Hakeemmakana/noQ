@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -17,6 +18,7 @@
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "inversify": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
     "mailer": "^0.6.7",
     "mongoose": "^9.5.0",
     "node": "^24.15.0",
@@ -30,6 +32,7 @@
     "@eslint/js": "^10.0.1",
     "@types/bcrypt": "^6.0.0",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.3.2",
     "@types/nodemailer": "^8.0.0",
     "@types/reflect-metadata": "^0.0.5",

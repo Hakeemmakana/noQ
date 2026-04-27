@@ -6,4 +6,5 @@ export interface IAuthService{
     userId: string;
   }>;
   forgetPassword(email:string):Promise<{status:number,message:string}>
+  resendOtp(email:string,purpose:string):Promise<{status:number,message:string}>
 }

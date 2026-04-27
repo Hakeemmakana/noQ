@@ -8,7 +8,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import { emailRegex } from "../../../constants/regex";
 import { INVALID_EMAIL, LOGGED_OUT_MESSAGE } from "../../../constants/messages";
-import strict from "node:assert/strict";
+
 
 @injectable()
 export class AuthController implements IAuthController{
@@ -50,7 +50,7 @@ export class AuthController implements IAuthController{
                 secure:false,
                 sameSite:'strict'
             });
-            res.status(HttpStatus.OK).json({message:LOGGED_OUT_MESSAGEgit })
+            res.status(HttpStatus.OK).json({message:LOGGED_OUT_MESSAGE })
            
         } catch (error) {
             next(error)
@@ -65,14 +65,20 @@ export class AuthController implements IAuthController{
             const {status,message}=await this._authService.forgetPassword(email);
             res.status(status).json({message:message});
         } catch (error) {
-            
+            next(error)
         }
     }
     async resendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            
+            const {email,purpose}=req.body;
+            if(!email||!emailRegex.test(email)){
+                throw new AppError(INVALID_EMAIL,HttpStatus.BAD_REQUEST)
+            }
+            const {message,status}= await this._authService.resendOtp(email.tring(),purpose)
+            res.status(status).json({message:message})
+
         } catch (error) {
-            
+            next(error)
         }
     }
     
