@@ -1,6 +1,6 @@
 import { UserDocument } from "../../../models/user";
-
-export interface IAuthRepository {
+import { IUser } from "../../../types/user";
+export interface IAuthRepository  {
     register(userData: {
         name: string;
         email: string;
@@ -11,8 +11,8 @@ export interface IAuthRepository {
         imageUrl?:string,
     }): Promise<{ user: UserDocument }>
     findByEmail(email: string): Promise<UserDocument | null>
-    // findById(id: string): Promise<UserDocument | null>;
+    findById(id: string): Promise<UserDocument | null>;
     // findOneAndUpdate(userId: string, data: Partial<IUser>): Promise<UserDocument | null>;
-    // findByIdAndUpdate(userId: string, data: Partial<IUser>): Promise<UserDocument | null>;
+    findByIdAndUpdate(userId: string, data: Partial<IUser>): Promise<UserDocument | null>;
     // findAdmin(): Promise<UserDocument | null>;
 }

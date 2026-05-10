@@ -2,17 +2,21 @@
 import { Route, Routes } from 'react-router-dom'
 
 import UserRouter from './router/UserRouter'
-import HotelAdminRouter from './router/HotelAdminRouter'
 import AdminRouter from './router/AdminRouter'
+import AuthRouter from './router/AuthRouter'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
   return (
-      <Routes>
+    <>
+    <Toaster position='top-center'/>
+    <Routes>
         <Route path='/*' element={<UserRouter/>}/>
+        <Route path='/auth/*'element={<AuthRouter/>}/>
         <Route path='/admin/*' element={<AdminRouter/>}/>
-        <Route path='/hotelAdmin/*' element={<HotelAdminRouter/>}/>
       </Routes>
+      </>
   )
 }
 

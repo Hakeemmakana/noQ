@@ -6,7 +6,7 @@ const connectDB=async()=>{
         if(!process.env.MONGODB_URI){
             throw new Error('monogdb uri not defined in env file')
         }
-        const connect =await mongoose.connect(process.env.MONGODB_URI)
+        await mongoose.connect(process.env.MONGODB_URI)
         console.log('mongodb connected')
         
     } catch (error) {

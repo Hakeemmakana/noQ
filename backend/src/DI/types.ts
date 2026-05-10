@@ -1,3 +1,4 @@
+
 export const TYPES={
     // Authentication 
     AuthRepository:Symbol.for('AuthRepository'),
@@ -5,5 +6,12 @@ export const TYPES={
     AuthController:Symbol.for('AuthController'),
 
     // Email
-    EmailService:Symbol.for('EmailService')
+    EmailService:Symbol.for('EmailService'),
+
+    //User
+    UserRepository:Symbol.for('UserRepository'),
+    UserService:Symbol.for('UserService'),
+    UserController:Symbol.for('UserController')
+    
+
 }

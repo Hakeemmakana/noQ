@@ -1,11 +1,30 @@
-import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import SuperAdminLogin from '../pages/auth/SuperAdminLogin'
+import AppLayout from '../layout/admin/AppLayout'
+import DashboardPage from '../features/admin/dashboard/pages/DashboardPage'
+import UserManagementPage from '../features/admin/users/page/UserManagementPage'
+
 
 export default function AdminRouter() {
   return (
     <Routes>
-        <Route path='/login' element={<SuperAdminLogin/>}/>
+      <Route path='/' element={<AppLayout />}>
+        <Route
+          index
+          element={<UserManagementPage />} 
+        />
+
+        {/* <Route
+          path='/dashboard'
+          element={<DashboardPage />}
+          
+        /> */}
+        <Route
+          path='/users'
+          element={<UserManagementPage />}
+          
+        />
+
+      </Route>
     </Routes>
   )
 }

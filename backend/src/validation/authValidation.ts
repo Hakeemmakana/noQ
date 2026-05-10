@@ -34,3 +34,26 @@ export const validateRegister = (data: any) => {
     data:data
   };
 };
+
+export const validateLogin=(data:any)=>{
+  const errors:Record<string,string>={}
+  // Email
+  if (!data.email || !emailRegex.test(data.email)) {
+    errors.email = "Invalid email address";
+  }
+  // Password (regex added)
+  if (!data.password || !passwordRegex.test(data.password)) {
+    errors.password =
+      "Password must be at least 6 chars, include letter & number";
+  }
+  if (!data.context||(data.context !== 'userLogin' && data.context !== 'adminLogin') ) {
+    errors.context =
+      'Invalid context';
+  }
+  return {
+    isValid: Object.keys(errors).length === 0,
+    errors,
+    data:data
+  };
+
+}

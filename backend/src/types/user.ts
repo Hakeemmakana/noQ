@@ -3,7 +3,7 @@ export interface IUser{
     isVerified:boolean;
     imageUrl?:string;
     age?:number;
-    genter?:string;
+    gender?:string;
     dob?:Date;
     password:string;
     phone:string;

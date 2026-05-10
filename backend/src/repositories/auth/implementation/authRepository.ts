@@ -24,7 +24,7 @@ export class AuthRepository extends BaseRepository<IUser> implements IAuthReposi
         isAdmin: userData.isAdmin,
         ...(userData.password && { password: userData.password }),
         ...(userData.phone && { phone: userData.phone }),
-        ...(userData.googleId && { googleID: userData.googleId }),
+        ...(userData.googleId && { googleId: userData.googleId }),
         ...(userData.imageUrl && { imageUrl: userData.imageUrl }),
         }
         const savedUser=await this.create(data)
@@ -38,5 +38,10 @@ export class AuthRepository extends BaseRepository<IUser> implements IAuthReposi
             isDeleted:false
         })
     }
-
+    async findById(id: string): Promise<UserDocument | null> {
+    return await this.getById(id)
+    }
+    async findByIdAndUpdate(userId: string, data: Partial<IUser>): Promise<UserDocument | null> {
+        return await this.updateById(userId,data)
+    }
 }

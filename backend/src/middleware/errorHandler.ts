@@ -1,3 +1,5 @@
+import { NextFunction, Request,Response } from "express";
+
 export class AppError extends Error {
     public readonly statusCode:number;
     public readonly errors?:Record<string, string>;
@@ -11,4 +13,25 @@ export class AppError extends Error {
         Object.setPrototypeOf(this, new.target.prototype);
         Error.captureStackTrace(this);
     }
+}
+export const errorHandler=(
+    err:any,
+    req:Request,
+    res:Response,
+    next:NextFunction
+)=>{
+    if (err instanceof AppError) {
+        console.log(err)
+        return res.status(err.statusCode).json({
+            status: 'error',
+            message: err.message,
+            errors: err.errors || null
+        });
+    }
+    console.error('INTERNAL ERROR:', err);
+    return res.status(500).json({
+        status: 'error',
+        message: 'Internal Server Error'
+    });
+    
 }
