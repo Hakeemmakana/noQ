@@ -4,8 +4,10 @@ import HttpStatus from '../constants/httpStatusCode'
 import { AuthRepository } from '../repositories/auth/implementation/authRepository'
 import { ACCOUNT_IS_BLOCKED } from '../constants/messages'
 import { AppError } from './errorHandler'
+import AdminAuthRepository from '../repositories/adminAuth/implemetation/adminAuthRepository'
 
 const userRepo = new AuthRepository()
+const adminRepo= new AdminAuthRepository()
 type JwtPayloadType = {
     id: string;
     role: string;
@@ -14,8 +16,9 @@ type JwtPayloadWithUser = {
     userId: string;
 };
 
-interface AuthRequest extends Request {
+export interface AuthRequest extends Request {
     user?: JwtPayloadType;
+    admin?:JwtPayloadType
 }
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
@@ -73,14 +76,14 @@ const verifyAdmin = async (req: AuthRequest, res: Response, next: NextFunction) 
                 message: 'Access denied. Admin privileges required.'
             });
         }
-        const user = await userRepo.getById(decode.id)
-        if (!user) {
+        const admin = await adminRepo.getById(decode.id)
+        if (!admin) {
             return res.status(HttpStatus.NOT_FOUND).json({ message: 'user Not provided' })
         }
-        if (!user.isVerified) {
+        if (admin.status==='rejected') {
             return res.status(HttpStatus.FORBIDDEN).json({ message: ACCOUNT_IS_BLOCKED })
         }
-        req.user = decode
+        req.admin = decode
         next()
 
     } catch (error) {

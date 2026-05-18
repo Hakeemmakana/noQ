@@ -9,8 +9,6 @@ export class EmailService implements IEmailService {
     private transporter: Transporter
     private fromEmail: string
     constructor() {
-        console.log('called constructor',process.env.NODEMAILER_EMAIL,
-                 process.env.NODEMAILER_EMAIL_PASSWORD)
         this.fromEmail = process.env.NODEMAILER_EMAIL as string
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -40,7 +38,6 @@ export class EmailService implements IEmailService {
         };
         try {
             await this.transporter.sendMail(mailOption);
-            console.log('otp')
             logger.info(`OTP send to${email} ,[${otp}]`);
         } catch (error) {
             logger.error('error while sending OTP email',error);

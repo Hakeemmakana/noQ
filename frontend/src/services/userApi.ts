@@ -2,6 +2,7 @@ import axios from "axios";
 import { store } from "../app/store";
 import { setUserAccessToken, userLogout } from "../features/auth/authSlice/userAuthSlice";
 import { axiosConfig, API_URL } from "./apiConfig";
+import { errorToast } from "../shared/utils/toastNotification";
 
 const userApi = axios.create(axiosConfig);
 
@@ -18,7 +19,7 @@ userApi.interceptors.request.use((config) => {
 userApi.interceptors.response.use(
     (response) => response,
     async (error) => {
-        console.log(error,'error occurend')
+        
         const originalRequest = error.config;
 
         // Handle Blocked User
@@ -41,6 +42,19 @@ userApi.interceptors.response.use(
                 store.dispatch(userLogout());
                 return Promise.reject(refreshError);
             }
+        }
+        let errorData
+        if(error?.response?.data?.errors){
+            errorData=Object.values(error?.response?.data?.errors)
+
+        }
+        
+        if(errorData&&errorData.length){
+            errorData.forEach((item:unknown) => {
+                if(typeof item=='string'){
+                    errorToast(item)
+                }
+            });
         }
         return Promise.reject(error);
     }

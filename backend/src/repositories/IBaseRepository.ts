@@ -1,4 +1,4 @@
-import  { Model,  UpdateQuery, HydratedDocument,QueryFilter} from 'mongoose'
+import  { Model,  UpdateQuery, HydratedDocument,QueryFilter, Query} from 'mongoose'
 import { PaginatedResult } from '../types/pagination';
 
 
@@ -49,6 +49,9 @@ export class BaseRepository<T> {
             limit,
             totalPages:Math.ceil(total / limit),
         }
+    }
+    getByIdWithPopulate(id:string):Query<T|null,T>{
+         return this.model.findOne({_id:id,isDeleted:false,})
     }
 
 }

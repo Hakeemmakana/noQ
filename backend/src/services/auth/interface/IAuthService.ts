@@ -10,7 +10,7 @@ export interface IAuthService{
   }>;
   forgetPassword(email:string):Promise<{status:number,message:string}>;
   resendOtp(email:string,purpose:string):Promise<{status:number,message:string}>;
-  login(email:string,password:string,context:string):Promise<{user:IUserMappedData,accessToken:string,refreshToken:string}>;
+  login(email:string,password:string):Promise<{user:IUserMappedData,accessToken:string,refreshToken:string}>;
   resetPassword(token:string,newPassword:string):Promise<{message:string}>;
   googleAuth(accessToken:string):Promise<{user:IUserMappedData,accessToken:string,refreshToken:string}>;
   refreshToken(refreshToken:string):Promise<{newAccessToken:string}>;

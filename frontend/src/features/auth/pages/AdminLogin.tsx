@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { validateLogin } from '../validation/LoginValidation';
-import { loginApi } from '../service/authService';
+import { adminLoginApi } from '../service/authService';
 import { useDispatch } from 'react-redux';
 import { adminLogin } from '../authSlice/adminAuthSlice';
 import { successToast } from '../../../shared/utils/toastNotification';
@@ -26,8 +26,7 @@ const AdminLogin = () => {
 
       const loginAdmin = async () => {
         try {
-          const context = 'adminLogin'
-          const res = await loginApi({ email, password, context })
+          const res = await adminLoginApi({ email, password })
 
           dispatch(adminLogin({ user: res.user, token: res.accessToken }))
           successToast('loged in successfully')

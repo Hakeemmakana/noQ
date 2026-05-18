@@ -1,4 +1,4 @@
-import React,{ useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import Logo from "../../../assets/Logo";
 import { emailRegex,nameRegex,phoneRegex } from '../../../constants/regex';
@@ -65,7 +65,6 @@ const SingupUser = () => {
     setSubmitted(true);
     if (Object.keys(errors).length > 0) return;
     setLoading(true);
-    console.log(form)
     setTimeout(() => setLoading(false), 1800);
     const handleRegisterUser=async()=>{
       try {
@@ -86,7 +85,6 @@ const SingupUser = () => {
           }})
         }
       } catch (error) {
-        console.log(error)
         errorToast(error as string) 
       } 
       

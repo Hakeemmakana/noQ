@@ -15,10 +15,10 @@ export class AppError extends Error {
     }
 }
 export const errorHandler=(
-    err:any,
+    err:Error,
     req:Request,
     res:Response,
-    next:NextFunction
+    _next:NextFunction
 )=>{
     if (err instanceof AppError) {
         console.log(err)

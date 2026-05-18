@@ -6,7 +6,6 @@ import {
   ClipboardList,
   Users,
   User,
-  BadgeDollarSign,
   BarChart3,
 } from "lucide-react";
 

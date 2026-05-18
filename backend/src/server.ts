@@ -19,13 +19,17 @@ app.get("/test", (req, res) => {
     console.log("🔥 TEST ROUTE HIT");
     res.send("OKkjkjjkk");
 });
+// app.use(cors({
+//   origin: 'http://localhost:5173', 
+//   credentials: true                
+// }));
 app.use(cors({
-  origin: 'http://localhost:5173', 
-  credentials: true                
+  origin: true,
+  credentials: true
 }));
-app.use('/',userRouter)
 app.use('/auth',auth)
 app.use('/admin',admin)
+app.use('/',userRouter)
 app.use(errorHandler)
 async function start(){
     connectDB()

@@ -1,7 +1,11 @@
 import { Route, Routes } from 'react-router-dom'
 import AppLayout from '../layout/admin/AppLayout'
-import DashboardPage from '../features/admin/dashboard/pages/DashboardPage'
+// import DashboardPage from '../features/admin/dashboard/pages/DashboardPage'
 import UserManagementPage from '../features/admin/users/page/UserManagementPage'
+import StaffManagementPage from '../features/admin/staff/pages/StaffManagementPage'
+import ProductCategoryPage from '../features/admin/category/pages/ProductCategoryPage'
+import TablesPage from '../features/admin/table/pages/TablesPage'
+import AdminProfilePage from '../features/admin/profile/pages/AdminProfilePage'
 
 
 export default function AdminRouter() {
@@ -23,6 +27,26 @@ export default function AdminRouter() {
           element={<UserManagementPage />}
           
         />
+          <Route
+            path='/staff'
+            element={<StaffManagementPage/>}
+            
+          />
+          <Route
+            path='/categories'
+            element={<ProductCategoryPage/>}
+            
+          />
+          <Route
+            path='/tables'
+            element={<TablesPage/>}
+            
+          />
+          <Route
+            path='/profile'
+            element={<AdminProfilePage/>}
+            
+          />
 
       </Route>
     </Routes>

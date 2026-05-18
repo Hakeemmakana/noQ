@@ -27,7 +27,7 @@ adminApi.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 // Adjust this URL to your specific Admin refresh endpoint if different
-                const { data } = await axios.post(`${API_URL}/admin/refresh-token`, {}, { withCredentials: true });
+                const { data } = await axios.post(`${API_URL}/auth/admin-refresh-token`, {}, { withCredentials: true });
                 store.dispatch(setAdminAccessToken(data.accessToken));
                 originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
                 return adminApi(originalRequest);

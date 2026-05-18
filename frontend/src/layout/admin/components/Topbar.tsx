@@ -5,6 +5,7 @@ interface HeaderConfig {
   title: string;
   subtitle?: string;
   isSearch?: boolean;
+  isSort?:boolean
 }
 
 interface TopbarProps {
@@ -23,16 +24,17 @@ useEffect(() => {
   }, 500);
 
   return () => clearTimeout(timer);
-}, [searchVal]);
+}, [searchVal,setDebouncedSearch]);
 const handleClearSearch = () => {
     setSearchVal("");
     
   };
 
   const {
-    title = "Dashboard",
+    title = "Staff",
     subtitle = "Welcome back",
     isSearch = false,
+    isSort=true
   } = header;
 
   return (
@@ -82,7 +84,7 @@ const handleClearSearch = () => {
                 </button>
               )}
           </div>
-        ) : (
+        ) : isSort? (
           <div className="inline-flex w-fit rounded-full bg-[#ECECF4] p-1 dark:bg-slate-800">
             <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1D27F3] shadow-sm dark:bg-slate-200 dark:text-slate-900">
               Monthly
@@ -91,6 +93,8 @@ const handleClearSearch = () => {
               Yearly
             </button>
           </div>
+        ):(
+          <></>
         )}
       </div>
     </header>

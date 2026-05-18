@@ -1,9 +1,8 @@
-import userApi from '../../../services/api'
+import userApi from '../../../services/userApi'
 import { AUTH_ROUTE } from "../../../shared/constants/apiRoutes";
+import getErrorMessage from '../../../utils/getErrorMessage';
 
-const getErrorMessage = (error: any): string => {
-    return error?.response?.data?.message || "Something went wrong";
-};
+
 
 export const logoutAdmin=async()=>{
     try {

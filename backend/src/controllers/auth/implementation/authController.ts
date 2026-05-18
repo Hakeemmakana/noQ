@@ -17,10 +17,10 @@ export class AuthController implements IAuthController {
     constructor(@inject(TYPES.AuthService) private _authService: IAuthService) { }
     register = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
+
             const parsed = validateRegister(req.body)
 
             if (!parsed.isValid) {
-                console.log(parsed.errors)
                 throw new AppError('validation Failed', HttpStatus.BAD_REQUEST, parsed.errors)
             }
             
@@ -33,28 +33,20 @@ export class AuthController implements IAuthController {
 
     login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log(req.body)
             const parsed = validateLogin(req.body)
             if (!parsed.isValid) {
                 throw new AppError('Validation Failed', HttpStatus.BAD_REQUEST, parsed.errors)
             }
-            const { email, password, context } = parsed.data
-            const { user, accessToken, refreshToken } = await this._authService.login(email, password, context)
-            if (user.isAdmin) {
-                res.cookie("admin_refresh_token", refreshToken, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: "strict",
-                    maxAge: refreshTokenMaxAge,
-                });
-            } else {
+            const { email, password } = parsed.data
+            const { user, accessToken, refreshToken } = await this._authService.login(email, password)
+            
                 res.cookie("user_refresh_token", refreshToken, {
                     httpOnly: true,
                     secure: false,
                     sameSite: "strict",
                     maxAge: refreshTokenMaxAge,
                 });
-            }
+            
             res.json({ user, accessToken });
         } catch (error) {
             next(error)
@@ -84,24 +76,9 @@ export class AuthController implements IAuthController {
             next(error)
         }
     }
-    async AdminLogout(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            res.clearCookie('admin_refresh_token', {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'strict'
-            });
-            res.status(HttpStatus.OK).json({ message: LOGGED_OUT_MESSAGE })
-
-
-        } catch (error) {
-            next(error)
-        }
-    }
 
     forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log(req.body)
             const email = req.body.email.trim();
             if (!email || !emailRegex.test(email)) {
                 throw new AppError(INVALID_EMAIL, HttpStatus.BAD_REQUEST);
@@ -134,7 +111,6 @@ export class AuthController implements IAuthController {
             if (!passwordRegex.test(newPassword)) {
                 throw new AppError('Enter valid password', HttpStatus.BAD_REQUEST)
             }
-            console.log('reset upper message auth')
             const { message } = await this._authService.resetPassword(token, newPassword)
             res.json({ message })
 
@@ -160,22 +136,7 @@ export class AuthController implements IAuthController {
             next(error)
         }
     }
-    adminRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const refreshToken = req.cookies?.admin_refresh_token;
-
-      if (!refreshToken) {
-        throw new AppError( NO_REFRESH_TOKEN_FOUND,HttpStatus.UNAUTHORIZED);
-      }
-
-      const { newAccessToken } =
-        await this._authService.refreshToken(refreshToken);
-
-      res.status(HttpStatus.OK).json({ accessToken: newAccessToken });
-    } catch (error) {
-      next(error);
-    }
-  };
+    
     userRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const refreshToken = req.cookies?.user_refresh_token;

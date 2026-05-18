@@ -148,7 +148,6 @@ export default function TwoStepVerification() {
 
         const res = await verifyOtp(data)
         if (res) {
-          console.log('sucess verify ')
           successToast(res.message)
           if(res.token){
             navigate('/auth/reset-password',{state:{
@@ -159,7 +158,6 @@ export default function TwoStepVerification() {
           }
         }
       } catch (error) {
-        console.log('error occured in otp verification')
         setError(error as string)
         setOtp(Array(OTP_LENGTH).fill(""));
         setTimeout(() => focusAt(0), 50);
