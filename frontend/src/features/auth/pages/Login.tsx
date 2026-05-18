@@ -28,8 +28,7 @@ const Login = () => {
 
       const loginUser = async () => {
         try {
-          const context = 'userLogin'
-          const res = await loginApi({ email, password, context })
+          const res = await loginApi({email, password})
 
           dispatch(userLogin({ user: res.user, token: res.accessToken }))
           successToast('loged in successfully')
@@ -61,12 +60,12 @@ const Login = () => {
       } catch (error) {
         setErrorMessage(error as string)
         setError(true)
-        console.log("Backend error:", error);
       }
     },
 
     onError: () => {
-      console.log("Google Login Failed");
+      setErrorMessage("Google Login Failed")
+        setError(true)
     }
   });
 

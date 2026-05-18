@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 // import { resetPassword } from '../service/authService';
 import { successToast, errorToast } from '../../../shared/utils/toastNotification';
 import { resetPassword } from '../service/authService';
+import type { ApiError } from '../../../utils/typs';
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const ResetPassword = () => {
   // Get token from previous page (verify-otp)
   useEffect(() => {
     const state = location.state as { token?: string; email?: string } | null;
-    
+
     if (state?.token) {
       setToken(state.token);
     } else {
@@ -65,23 +66,29 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const res = await resetPassword({ 
-        token, 
-        newPassword 
+      const res = await resetPassword({
+        token,
+        newPassword
       });
 
       successToast(res.message || "Password reset successfully!");
-      
+
       // Redirect to login after success
       setTimeout(() => {
         navigate('/auth/login', { replace: true });
       }, 1500);
 
-    } catch (err: any) {
-      console.error(err);
-      const message = err?.response?.data?.message || err?.message || "Failed to reset password";
-      setError(message);
-      errorToast(message);
+    } catch (err: unknown) {
+      if (typeof err == 'object' && err !== null && 'response' in err) {
+
+        const message = (err as ApiError)?.response?.data?.message || "Failed to reset password";
+        setError(message);
+        errorToast(message);
+      } else if (err instanceof Error) {
+        const message = err?.message
+        setError(message);
+        errorToast(message);
+      }
     } finally {
       setLoading(false);
     }

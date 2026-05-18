@@ -1,4 +1,8 @@
-import axios from "axios";
+// const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+// export const API_URL = isMobile
+//   ? "http://192.168.1.52:4001"
+//   : "http://localhost:4001";
 
 const isLocal=window.location.hostname==='localhost';
 export const API_URL=isLocal==true

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { emailRegex } from '../../../constants/regex';
 import { forgetPassword } from '../service/authService';
@@ -40,7 +40,6 @@ const ForgetPass = () => {
       });
 
     } catch (err) {
-        console.log(err)
       setError(err as string);
       setLoading(false)
     }

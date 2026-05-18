@@ -33,7 +33,7 @@ export default function UserMobileCard({
       </div>
 
       <div className="flex items-center justify-between gap-3">
-        <StatusBadge status={user.status} onClick={() => onRequestStatusChange(user)} />
+        <StatusBadge status={user.isVerified?'active':'blocked'} onClick={() => onRequestStatusChange(user)} />
 
         <button
           onClick={() => onRequestDelete(user)}

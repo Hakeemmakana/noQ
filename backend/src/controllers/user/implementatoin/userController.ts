@@ -4,13 +4,17 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import IUserService from "../../../services/user/interface/IUserService";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { USER_NOT_FOUND } from "../../../constants/messages";
+import { FILE_IS_REQURIED, PROFILE_UPDATE_SUCCESS, USER_NOT_FOUND, VALIDATION_FAILED } from "../../../constants/messages";
+import { AuthRequest } from "../../../middleware/jwt";
+import { updateUserProfileFormateDto } from "../../../dtos/user/create-user.dto";
+import { validateUpdateProfile } from "../../../validation/updateUserValidation";
+import { AppError } from "../../../middleware/errorHandler";
+import { userDataMapping } from "../../../dtos/user/user-response.dto";
 @injectable()
 export default class UserController implements IUserController {
     constructor(@inject(TYPES.UserService) private _userService: IUserService) { }
     getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            console.log('dkjfdk')
             const page = Number(req.query.page) || 1
             const search = req.query.search || ''
             const usersData = await this._userService.getAllUsers(search as string, page);
@@ -20,7 +24,6 @@ export default class UserController implements IUserController {
                 data: usersData
             });
         } catch (error) {
-            console.log(error)
             next(error)
         }
 
@@ -69,7 +72,7 @@ export default class UserController implements IUserController {
             next(error)
         }
     }
-    deleteUser = async (req: Request,res: Response,next: NextFunction): Promise<void> => {
+    deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.params.id as string;
             if (!userId) {
@@ -98,4 +101,62 @@ export default class UserController implements IUserController {
             next(error);
         }
     };
+    updateUserProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id as string
+            const data = updateUserProfileFormateDto(req.body)
+            const { isValid, errors } = validateUpdateProfile(data)
+            if (!isValid) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, errors)
+            }
+            const user = await this._userService.updateUserProfile(userId, data)
+            if (!user) {
+                throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+            }
+            const mappedUser = userDataMapping(user)
+            res.json({
+                message: 'User details updated successfully',
+                data: mappedUser
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+    getUserProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const userId = req.user?.id as string
+            const user = await this._userService.getProfile(userId)
+            if (!user) {
+                throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
+            }
+            const mappedUser = userDataMapping(user)
+            res.json({
+                message: 'success',
+                data: mappedUser
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
+    updateUserProfilePicture = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+           
+            const userId = req.user?.id as string
+            if (!req.file) {
+                throw new AppError(FILE_IS_REQURIED, HttpStatus.BAD_REQUEST)
+            }
+            const updatedUser = await this._userService.updateUserProfilePicture(userId, req.file)
+            if (!updatedUser) {
+                throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND)
+            }
+            res.status(HttpStatus.OK).json({
+                success:true,
+                message:PROFILE_UPDATE_SUCCESS,
+                imageUrl:updatedUser.imageUrl
+            })
+
+        } catch (error) {
+            next(error)
+        }
+    }
 }

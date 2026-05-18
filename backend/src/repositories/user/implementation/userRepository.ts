@@ -1,3 +1,4 @@
+import { QueryFilter } from "mongoose";
 import { User, UserDocument } from "../../../models/user";
 import { PaginatedResult } from "../../../types/pagination";
 import { IUser } from "../../../types/user";
@@ -10,7 +11,7 @@ export default class  UserRepository extends BaseRepository<IUser> implements IU
     }
     async getAllUsers(search:string,page:number,limit:number): Promise<PaginatedResult<IUser>> {
 
-        const filter:any={
+        const filter:QueryFilter<IUser>={
             isDeleted:false
         }
         if(search){
@@ -29,5 +30,12 @@ export default class  UserRepository extends BaseRepository<IUser> implements IU
     }
     async deleteUser(userId: string): Promise<UserDocument | null> {
         return await this.deleteById(userId)
+    }
+    async updateUserProfile(userId:string,data:Partial<IUser>):Promise<IUser|null>{
+        
+        return await this.updateById(userId,data)
+    }
+    async getProfile(userId:string):Promise<IUser|null>{
+        return await this.getById(userId)
     }
 }

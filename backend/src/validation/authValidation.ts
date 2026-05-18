@@ -1,6 +1,11 @@
 import { phoneRegex, emailRegex, passwordRegex } from "../constants/regex";
+import { createUserDto } from "../dtos/user/create-user.dto";
+type logUser={
+  email:string;
+  password:string;
+}
 
-export const validateRegister = (data: any) => {
+export const validateRegister = (data: createUserDto) => {
   const errors: Record<string,string>= {};
 
   // Full Name
@@ -24,10 +29,7 @@ export const validateRegister = (data: any) => {
       "Password must be at least 6 chars, include letter & number";
   }
 
-  // Confirm Password
-  if (data.password !== data.confirmPassword) {
-    errors.confirmPassword = "Passwords do not match";
-  }
+  
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
@@ -35,7 +37,7 @@ export const validateRegister = (data: any) => {
   };
 };
 
-export const validateLogin=(data:any)=>{
+export const validateLogin=(data:logUser)=>{
   const errors:Record<string,string>={}
   // Email
   if (!data.email || !emailRegex.test(data.email)) {
@@ -46,10 +48,7 @@ export const validateLogin=(data:any)=>{
     errors.password =
       "Password must be at least 6 chars, include letter & number";
   }
-  if (!data.context||(data.context !== 'userLogin' && data.context !== 'adminLogin') ) {
-    errors.context =
-      'Invalid context';
-  }
+  
   return {
     isValid: Object.keys(errors).length === 0,
     errors,

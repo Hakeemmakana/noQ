@@ -61,7 +61,6 @@ export class AuthService implements IAuthService {
 
     }
     verifyOtp = async (email: string, otp: string, purpose: string) => {
-        console.log(email, purpose, otp)
         const redisOtpKey = `otp:${email}`
         const redisDataKey = `userData:${email}`
 
@@ -128,9 +127,8 @@ export class AuthService implements IAuthService {
         await this._emailService.resendOtpMail(email, otp)
         return { status: HttpStatus.OK, message: OTP_SENT_SUCCESSFULLY }
     }
-    login = async (email: string, password: string, context: string): Promise<{ user: IUserMappedData; accessToken: string; refreshToken: string }> => {
+    login = async (email: string, password: string): Promise<{ user: IUserMappedData; accessToken: string; refreshToken: string }> => {
         const user = await this._authRepository.findByEmail(email)
-        console.log(email, password)
         if (!user) {
             throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
         }
@@ -144,23 +142,16 @@ export class AuthService implements IAuthService {
         if (!isMatch) {
             throw new AppError(INVALID_CREDENTIALS, HttpStatus.FORBIDDEN)
         }
-        if (user.isAdmin && context === 'userLogin') {
-            throw new AppError(INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED)
-        }
-        if (!user.isAdmin && context === 'adminLogin') {
-            throw new AppError(INVALID_CREDENTIALS, HttpStatus.UNAUTHORIZED)
-        }
+        
 
-        const role = user.isAdmin ? 'admin' : 'user';
+        const role = 'user'
         const accessToken = generateAccessToken(user._id.toString(), role)
         const refreshToken = generateRefreshToken(user._id.toString(), role)
         const mappedUser = userDataMapping(user)
         return { user: mappedUser, accessToken, refreshToken }
     }
     resetPassword = async (token: string, newPassword: string): Promise<{ message: string }> => {
-        console.log('new Passwrod', newPassword)
         const decode = verifyResetToken(token)
-        console.log('user reset tocken decoded', decode)
         const userId = decode.userId
         const user = await this._authRepository.findById(userId)
         if (!user) {
