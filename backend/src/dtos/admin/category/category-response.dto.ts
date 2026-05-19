@@ -1,4 +1,5 @@
 import { ICategory } from "../../../models/category";
+import { PaginatedResult } from "../../../types/pagination";
 
 
 
@@ -10,12 +11,8 @@ export interface ICategoryResponseDto {
     isAvailable: boolean;
 }
 
-interface IPaginatedData<T>{
-    total:number;
-    page:number;
-    limit:number;
-    data:T[]
-}
+
+
 
 
  function formatCategoryResponse(data: ICategory): ICategoryResponseDto {
@@ -26,12 +23,13 @@ interface IPaginatedData<T>{
         isAvailable:data.isAvailable
     };
 }
-export function toPaginatedCategoryResponse(paginatedData:IPaginatedData<ICategory>):IPaginatedData<ICategoryResponseDto> {
+export function toPaginatedCategoryResponse(paginatedData:PaginatedResult<ICategory>):PaginatedResult<ICategoryResponseDto> {
     
     return {
         total: paginatedData.total || 0,    
         page: paginatedData.page || 1,
         limit: paginatedData.limit || 8,
+        totalPages:paginatedData.totalPages,
         // We use our simple function inside the map
         data: (paginatedData.data || []).map(formatCategoryResponse)
     };

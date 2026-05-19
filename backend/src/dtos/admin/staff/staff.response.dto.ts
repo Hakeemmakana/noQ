@@ -9,7 +9,7 @@ export interface IStaffResponseDto {
     email:string;
 }
 
-interface IPaginatedData<T>{
+export interface IPaginatedDataStaff<T>{
     total:number;
     page:number;
     limit:number;
@@ -28,7 +28,7 @@ interface IPaginatedData<T>{
     };
 }
 
-export function toPaginatedStaffResponse(paginatedData:IPaginatedData<IStaff>):IPaginatedData<IStaffResponseDto> {
+export function toPaginatedStaffResponse(paginatedData:IPaginatedDataStaff<IStaff>):IPaginatedDataStaff<IStaffResponseDto> {
     
     return {
         total: paginatedData.total || 0,    

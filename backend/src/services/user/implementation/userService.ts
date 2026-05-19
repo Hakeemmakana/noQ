@@ -9,15 +9,19 @@ import { AppError } from "../../../middleware/errorHandler";
 import { UPLOAD_PORFILE_FAILED } from "../../../constants/messages";
 import IMediaService from "../../mediaService/interface/IMediaService";
 import HttpStatus from "../../../constants/httpStatusCode";
+import { updateUserProfileFormateDto, updateUserProfileInput } from "../../../dtos/user/create-user.dto";
+import { IUserMappedData, toPaginateUsersResponse, userDataMapping } from "../../../dtos/user/user-response.dto";
 
 
 @injectable()
 export default class UserService implements IUserService {
     constructor(@inject(TYPES.UserRepository) private _userRepository:IUserRepository,
                 @inject(TYPES.MediaService) private _MediaService:IMediaService   ) {}
-    getAllUsers = async (search: string, page: number): Promise<PaginatedResult<IUser>> => {
+    getAllUsers = async (search: string, page: number): Promise<PaginatedResult<IUserMappedData>> => {
         const limit = 8
-        return await this._userRepository.getAllUsers(search, page, limit)
+        const users= await this._userRepository.getAllUsers(search, page, limit)
+        const resUsers=toPaginateUsersResponse(users)
+        return resUsers
     }
     statusChange = async (userId: string, status: 'active' | 'blocked'): Promise<IUser | null> => {
         return await this._userRepository.changeStatus(userId, status)
@@ -26,12 +30,17 @@ export default class UserService implements IUserService {
         return await this._userRepository.deleteUser(userId);
 
     }
-    updateUserProfile=async(userId: string, data: Partial<IUser>): Promise<IUser|null> =>{
-        
-        return await this._userRepository.updateUserProfile(userId,data)
+    updateUserProfile=async(userId: string, data:updateUserProfileInput ): Promise<IUserMappedData> =>{
+        const dto = updateUserProfileFormateDto(data)
+        const res= await this._userRepository.updateUserProfile(userId,dto)
+            const mappedUser = userDataMapping(res!)
+            return mappedUser
+
     }
-    getProfile=async(userId:string):Promise<IUser|null>=>{
-        return await this._userRepository.getProfile(userId)
+    getProfile=async(userId:string):Promise<IUserMappedData>=>{
+        const user= await this._userRepository.getProfile(userId)
+        const mappedUser = userDataMapping(user!)
+        return mappedUser
     }
     updateUserProfilePicture=async(userId: string, file: Express.Multer.File): Promise<IUser | null>=> {
         let imageUrl:string|undefined

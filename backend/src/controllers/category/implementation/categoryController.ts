@@ -3,7 +3,7 @@ import { ICategoryController } from "../interfaces/ICatetoryController";
 import { validateCategoryForm } from "../../../validation/categoryValidation";
 import { AppError } from "../../../middleware/errorHandler";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { createCategoryDto, getCategoryDto } from "../../../dtos/admin/category/category-create.dto";
+import { createCategoryDto, getCategoryDto, IGetCategoryDto } from "../../../dtos/admin/category/category-create.dto";
 import { CATEGORY_CREATE_SUCCESS, CATEGORY_DELETE_SUCCESS, CATEGORY_FETCH_SUCCESS, CATEGORY_ID_REQUIRED, CATEGORY_NOT_FOUND, CATEGORY_STATUS_CHANGE_SUCCESS, CATEGORY_UPDATE_SUCCESS, INVALID_STATUS, VALIDATION_FAILED } from "../../../constants/messages";
 import { AuthRequest } from "../../../middleware/jwt";
 import { inject, injectable } from "inversify";
@@ -15,13 +15,12 @@ export default class CategoryController implements ICategoryController {
     constructor(@inject(TYPES.CategoryService) private _CategoryService: ICategoryService) { }
     getAllCategory = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const dto = getCategoryDto(req.query)
+            const data= req.query
             const hotelId = req.admin?.id as string
-            const data = await this._CategoryService.getAllCategory(dto.searchVal, dto.page, hotelId)
-            const outDto =toPaginatedCategoryResponse(data)
+            const resData = await this._CategoryService.getAllCategory(data as unknown as IGetCategoryDto, hotelId)
             res.status(HttpStatus.OK).json({
                 message: CATEGORY_FETCH_SUCCESS,
-                data: outDto
+                data: resData
             })
             return
         } catch (error) {
@@ -32,12 +31,11 @@ export default class CategoryController implements ICategoryController {
     createCategory = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const hotelId = req.admin?.id as string
-            const dto = createCategoryDto(req.body)
-            const validate = validateCategoryForm(dto)
-            if (!validate.isValid) {
-                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
+            const validatedData = validateCategoryForm(req.body)
+            if (!validatedData.isValid) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validatedData.errors)
             }
-            await this._CategoryService.createCategory(dto, hotelId)
+            await this._CategoryService.createCategory(req.body, hotelId)
 
             res.status(HttpStatus.CREATED).json({ message: CATEGORY_CREATE_SUCCESS });
             return
@@ -88,12 +86,11 @@ export default class CategoryController implements ICategoryController {
         try {
             const id = req.params.id as string
             const hotelId = req.admin?.id as string
-            const dto = createCategoryDto(req.body)
-            const validate = validateCategoryForm(dto)
+            const validate = validateCategoryForm(req.body)
             if (!validate.isValid || !id) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
-            const result = await this._CategoryService.updateCategory(id, hotelId, dto);
+            const result = await this._CategoryService.updateCategory(id, hotelId, req.body);
 
             if (!result) {
                 res.status(HttpStatus.NOT_FOUND).json({

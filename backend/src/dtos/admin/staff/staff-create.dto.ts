@@ -1,11 +1,11 @@
-export interface IcreateStaffDto{
+export interface IStaffDto{
     name:string;
     role:'waiter'|'chef';
     email:string;
     isActive:boolean;
     password:string
 }
-interface fromFrontData{
+export interface ICreateReqStaff{
     name:string;
     role:'waiter'|'chef';
     email:string;
@@ -14,7 +14,7 @@ interface fromFrontData{
 }
 
 
-export function createStaffDto(data:fromFrontData):IcreateStaffDto{
+export function createStaffDto(data:ICreateReqStaff):IStaffDto{
 
     return {
         name:data.name,
@@ -25,7 +25,7 @@ export function createStaffDto(data:fromFrontData):IcreateStaffDto{
     }
 }
 
-interface IGetStaffDto{
+export interface IGetStaffDto{
     searchVal:string;
     page:number;
 }

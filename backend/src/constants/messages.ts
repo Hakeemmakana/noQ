@@ -75,7 +75,7 @@ export const INVALID_STATUS='Invalid status,select valid status'
 export const FILE_IS_REQURIED='file is required'
 export const PROFILE_UPDATE_SUCCESS='Profile updated successfully'
 export const UPLOAD_PORFILE_FAILED="Failed to upload profile image"
-
+export const ADMIN_NOT_FOUND='Admin not found'
 
 
 

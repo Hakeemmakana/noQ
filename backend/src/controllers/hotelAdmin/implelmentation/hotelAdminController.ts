@@ -21,10 +21,10 @@ export default class HotelAdminController implements IHotelAdminController{
              if (!user) {
                  throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
              }
-             const mappedUser = adminResponseDto(user)
+             
              res.json({
                  message: 'success',
-                 data: mappedUser
+                 data: user
              })
          } catch (error) {
              next(error)
@@ -33,12 +33,12 @@ export default class HotelAdminController implements IHotelAdminController{
  updateAdminProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
          try {
              const hotelId = req.admin?.id as string
-             const data = adminProfileInputDto(req.body)
-             const { isValid, errors } = validateAdminProfileForm(data)
+             
+             const { isValid, errors } = validateAdminProfileForm(req.body)
              if (!isValid) {
                  throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, errors)
              }
-             const user = await this._HotelAdminService.updateAdminProfile(hotelId, data)
+             const user = await this._HotelAdminService.updateAdminProfile(hotelId, req.body)
              if (!user) {
                  throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
              }

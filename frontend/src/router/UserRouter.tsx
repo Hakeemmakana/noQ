@@ -10,7 +10,7 @@ const UserRouter = () => {
   return (
     <Routes>
       <Route path='/' element={<AppLayout />} >
-        <Route index element={<NoQApp />} />
+        <Route index element={<RestaurantOrderingLanding />} />
         {/* <Route path='home' element={<NoQApp />} /> */}
         <Route path='/home' element={<RestaurantOrderingLanding />} />
         <Route path='/tables/:hotelId/:tableId' element={<RestaurantOrderingLanding />} />

@@ -7,7 +7,7 @@ import { TYPES } from "../../../DI/types";
 import { AppError } from "../../../middleware/errorHandler";
 import { INVALID_STATUS, STAFF_CREATE_SUCCESS, STAFF_DELETE_SUCCESS, STAFF_FETCH_SUCCESS, STAFF_ID_REQUIRED, STAFF_NOT_FOUND, STAFF_STATUS_CHANGE_SUCCESS, STAFF_UPDATE_SUCCESS, VALIDATION_FAILED } from "../../../constants/messages";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { createStaffDto, getStaffDto } from "../../../dtos/admin/staff/staff-create.dto";
+import { createStaffDto, getStaffDto, IGetStaffDto } from "../../../dtos/admin/staff/staff-create.dto";
 import { validateStaffForm } from "../../../validation/staffValidation";
 import { toPaginatedStaffResponse } from "../../../dtos/admin/staff/staff.response.dto";
 @injectable()
@@ -16,13 +16,12 @@ export default class StaffController implements IStaffController {
 
     getAllStaff = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const dto = getStaffDto(req.query)
             const hotelId = req.admin?.id as string
-            const data = await this._StaffService.getAllStaff(dto.searchVal, dto.page, hotelId)
-            const outDto = toPaginatedStaffResponse(data)
+            const query=req.query as unknown as IGetStaffDto
+            const data = await this._StaffService.getAllStaff(query, hotelId)
             res.status(HttpStatus.OK).json({
                 message: STAFF_FETCH_SUCCESS,
-                data: outDto
+                data:data
             })
             return
         } catch (error) {
@@ -33,12 +32,11 @@ export default class StaffController implements IStaffController {
     createStaff = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const hotelId = req.admin?.id as string
-            const dto = createStaffDto(req.body)
-            const validate = validateStaffForm(dto)
+            const validate = validateStaffForm(req.body)
             if (!validate.isValid) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
-            await this._StaffService.createStaff(dto, hotelId)
+            await this._StaffService.createStaff(req.body, hotelId)
 
             res.status(HttpStatus.CREATED).json({ message: STAFF_CREATE_SUCCESS });
             return
@@ -89,12 +87,11 @@ export default class StaffController implements IStaffController {
         try {
             const id = req.params.id as string
             const hotelId = req.admin?.id as string
-            const dto = createStaffDto(req.body)
-            const validate = validateStaffForm(dto)
+            const validate = validateStaffForm(req.body)
             if (!validate.isValid || !id) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
-            const result = await this._StaffService.updateStaff(id, hotelId, dto);
+            const result = await this._StaffService.updateStaff(id, hotelId, req.body);
 
             if (!result) {
                 res.status(HttpStatus.NOT_FOUND).json({
