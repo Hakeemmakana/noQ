@@ -5,15 +5,23 @@ import { TYPES } from "../../../DI/types"
 import IHotelAdminRepository from "../../../repositories/hotelAdmin/interface/IHotelAdminRepository"
 import IMediaService from "../../mediaService/interface/IMediaService"
 import { AppError } from "../../../middleware/errorHandler"
-import { UPLOAD_PORFILE_FAILED } from "../../../constants/messages"
+import { ADMIN_NOT_FOUND, UPLOAD_PORFILE_FAILED } from "../../../constants/messages"
 import HttpStatus from "../../../constants/httpStatusCode"
+import { adminResponseDto, IAdminResponseDto } from "../../../dtos/admin/hotelAdminDto/admin.response.dto"
+import { adminProfileInputDto, IAdminProfileInputDto } from "../../../dtos/admin/hotelAdminDto/admin-input.dto"
 @injectable()
 export default class HotelAdminService implements IHotelAdminService {
     constructor(@inject(TYPES.HotelAdminRepository)private _HotelAdminRepository:IHotelAdminRepository,
                 @inject(TYPES.MediaService)private _MediaService:IMediaService){}
                 
-    getProfile = async (hotelId: string): Promise<IHotelAdmin | null> => {
-        return await this._HotelAdminRepository.getProfile(hotelId)
+    getProfile = async (hotelId: string): Promise<IAdminResponseDto> => {
+
+        const res=await this._HotelAdminRepository.getProfile(hotelId)
+        if(!res){
+            throw new AppError(ADMIN_NOT_FOUND, HttpStatus.NOT_FOUND)
+        }
+        const mappedAdmin = adminResponseDto(res)
+        return mappedAdmin
     }
     updateAdminProfilePicture = async (hotelId: string, file: Express.Multer.File): Promise<IHotelAdmin | null> => {
         let imageUrl: string | undefined
@@ -26,7 +34,8 @@ export default class HotelAdminService implements IHotelAdminService {
         const updateUser = await this._HotelAdminRepository.updateAdminProfile(hotelId, { imageUrl })
         return updateUser
     }
-    updateAdminProfile = async (hotelId: string, data: Partial<IHotelAdmin>): Promise<IHotelAdmin | null> => {
-        return await this._HotelAdminRepository.updateAdminProfile(hotelId, data)
+    updateAdminProfile = async (hotelId: string, data:IAdminProfileInputDto ): Promise<IHotelAdmin | null> => {
+        const dto = adminProfileInputDto(data)
+        return await this._HotelAdminRepository.updateAdminProfile(hotelId, dto)
     }
 }

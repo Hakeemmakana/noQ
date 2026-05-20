@@ -9,7 +9,7 @@ export interface ITableResponseDto {
     capacity: number;
     status: 'active' | 'inactive'
 }
-interface IPaginatedData<T> {
+export interface IPaginatedTableData<T> {
     total: number;
     page: number;
     limit: number;
@@ -25,7 +25,7 @@ function formatTableResponse(data: ITable): ITableResponseDto {
         status: data.isAvailable ? 'active' : 'inactive'
     };
 }
-export function toPaginatedTableResponse(paginatedData: IPaginatedData<ITable>): IPaginatedData<ITableResponseDto> {
+export function toPaginatedTableResponse(paginatedData: IPaginatedTableData<ITable>): IPaginatedTableData<ITableResponseDto> {
     return {
         total: paginatedData.total || 0,
         page: paginatedData.page || 1,

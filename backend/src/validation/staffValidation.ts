@@ -1,4 +1,4 @@
-import { IcreateStaffDto } from "../dtos/admin/staff/staff-create.dto";
+import { ICreateReqStaff } from "../dtos/admin/staff/staff-create.dto";
 
 
 export type StaffFormErrors = {
@@ -16,7 +16,7 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}$/;
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$/;
 
-export function validateStaffForm(data: IcreateStaffDto): StaffFormErrorsReturn {
+export function validateStaffForm(data: ICreateReqStaff): StaffFormErrorsReturn {
   const errors: StaffFormErrors = {};
 
   const name = data.name.trim();

@@ -1,19 +1,23 @@
-export interface ICreateTableDto{
+export interface ITableDto{
     tableNumber:string;
     seatingCapacity:number;
     isAvailable:boolean;
 
 }
-interface fromFrontData{
+export interface ITableReqDto{
     number:string;
     capacity:number;
     status:'active'|'inactive'
+}
+export interface getOneTable{
+    id:string;
+    hotelId:string;
 }
 export interface IGetTableDto{
     searchVal:string;
     page:number;
 }
-export const createTableDto=(data:fromFrontData):ICreateTableDto=>{
+export const convertTableDto=(data:ITableReqDto):ITableDto=>{
     return {
         tableNumber:data.number ??'',
         seatingCapacity:data.capacity ??'',
@@ -21,10 +25,16 @@ export const createTableDto=(data:fromFrontData):ICreateTableDto=>{
 
     }
 }
-export const getTableDto=(data:Partial<IGetTableDto>):IGetTableDto=>{
+export const getTableDto=(data:IGetTableDto):IGetTableDto=>{
     return {
         searchVal:data.searchVal??'',
         page:data.page??1
 
+    }
+}
+export const getOneTableDto=(data:getOneTable):getOneTable=>{
+    return {
+        id:data.id,
+        hotelId:data.hotelId
     }
 }

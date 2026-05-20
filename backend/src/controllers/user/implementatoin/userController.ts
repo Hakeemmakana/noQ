@@ -104,19 +104,17 @@ export default class UserController implements IUserController {
     updateUserProfile = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const userId = req.user?.id as string
-            const data = updateUserProfileFormateDto(req.body)
-            const { isValid, errors } = validateUpdateProfile(data)
+            const { isValid, errors } = validateUpdateProfile(req.body)
             if (!isValid) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, errors)
             }
-            const user = await this._userService.updateUserProfile(userId, data)
+            const user = await this._userService.updateUserProfile(userId, req.body)
             if (!user) {
                 throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-            const mappedUser = userDataMapping(user)
             res.json({
                 message: 'User details updated successfully',
-                data: mappedUser
+                data: user
             })
         } catch (error) {
             next(error)
@@ -129,10 +127,10 @@ export default class UserController implements IUserController {
             if (!user) {
                 throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-            const mappedUser = userDataMapping(user)
+            
             res.json({
                 message: 'success',
-                data: mappedUser
+                data: user
             })
         } catch (error) {
             next(error)

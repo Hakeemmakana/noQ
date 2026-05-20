@@ -7,7 +7,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import { AppError } from "../../../middleware/errorHandler";
 import { AuthRequest } from "../../../middleware/jwt";
-import { createTableDto, getTableDto } from "../../../dtos/admin/table/table-create.dto";
+import {  getOneTable, IGetTableDto } from "../../../dtos/admin/table/table-create.dto";
 import { validateTableForm } from "../../../validation/tableValidation";
 import { getTableWithHotelDetails, toPaginatedTableResponse } from "../../../dtos/admin/table/table-response.dto";
 @injectable()
@@ -16,14 +16,13 @@ export default class TableController implements ITableController {
 
     getAllTable = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const dto = getTableDto(req.query)
             const hotelId = req.admin?.id as string
-            const data = await this._TableService.getAllTable(dto.searchVal, dto.page, hotelId)
+            const data = await this._TableService.getAllTable(req.query as unknown as IGetTableDto, hotelId)
 
-            const outDto = toPaginatedTableResponse(data)
+            
             res.status(HttpStatus.OK).json({
                 message: TABLE_FETCH_SUCCESS,
-                data: outDto
+                data: data
             })
             return
 
@@ -35,12 +34,11 @@ export default class TableController implements ITableController {
     createTable = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const hotelId = req.admin?.id as string
-            const dto = createTableDto(req.body)
-            const validate = validateTableForm(dto)
+            const validate = validateTableForm(req.body)
             if (!validate.isValid) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
-            await this._TableService.createTable(dto, hotelId)
+            await this._TableService.createTable(req.body, hotelId)
 
             res.status(HttpStatus.CREATED).json({ message: TABLE_CREATE_SUCCESS });
             return
@@ -91,15 +89,14 @@ export default class TableController implements ITableController {
 
             const id = req.params.id as string
             const hotelId = req.admin?.id as string
-            const dto = createTableDto(req.body)
-            const validate = validateTableForm(dto)
+            const validate = validateTableForm(req.body)
             if (!validate.isValid || !id) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
             if (!['active', 'inactive'].includes(req.body.status)) {
                 throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST)
             }
-            const result = await this._TableService.updateTable(id, hotelId, dto);
+            const result = await this._TableService.updateTable(id, hotelId, req.body);
 
             if (!result) {
                 res.status(HttpStatus.NOT_FOUND).json({
@@ -152,14 +149,13 @@ export default class TableController implements ITableController {
             if(!hotelId||!tableId){
                 throw new AppError(VALIDATION_FAILED,HttpStatus.BAD_REQUEST)
             }
-            const result = await this._TableService.getTable(tableId as string,hotelId as string);
+            const result = await this._TableService.getTable(req.params as unknown as getOneTable);
             if(!result){
                 throw new AppError(TABLE_NOT_FOUND,HttpStatus.NOT_FOUND)
             }
-            const datas= getTableWithHotelDetails(result)
             res.status(HttpStatus.OK).json({
                 success: true,
-                ...datas
+                ...result
             }); 
             
         } catch (error) {
