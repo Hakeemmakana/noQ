@@ -32,12 +32,17 @@ export const TYPES = {
     StaffController: Symbol.for('StaffController'),
 
     //Media
-    MediaService:Symbol.for('MediaService'),
+    MediaService: Symbol.for('MediaService'),
 
     //HotelAdmin
-    HotelAdminRepository:Symbol.for('HotelAdminRepository'),
-    HotelAdminService:Symbol.for('HotelAdminService'),
-    HotelAdminController:Symbol.for('HotelAdminController'),
+    HotelAdminRepository: Symbol.for('HotelAdminRepository'),
+    HotelAdminService: Symbol.for('HotelAdminService'),
+    HotelAdminController: Symbol.for('HotelAdminController'),
+
+    //menuItems
+    MenuItemRepository: Symbol.for('MenuItemRepository'),
+    MenuItemService: Symbol.for('MenuItemService'),
+    MenuItemController: Symbol.for('MenuItemController'),
 
 
 

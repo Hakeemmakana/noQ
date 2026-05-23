@@ -46,6 +46,12 @@ import IHotelAdminService from '../services/hotelAdmin/interface/IHotelAdminServ
 import HotelAdminService from '../services/hotelAdmin/implelmentation/hotelAdminservice'
 import IHotelAdminController from '../controllers/hotelAdmin/interface/IHotelAdminController'
 import HotelAdminController from '../controllers/hotelAdmin/implelmentation/hotelAdminController'
+import IMenuRepository from '../repositories/menu/interface/IMenuRespository'
+import MenuItemRepository from '../repositories/menu/implementation/menuRepository'
+import IMenuItemService from '../services/menu/interface/IMenuService'
+import MenuItemService from '../services/menu/implementation/menuService'
+import { IMenuItemController } from '../controllers/menu/interface/IMenuController'
+import MenuItemController from '../controllers/menu/implements/menuController'
 
 const container=new Container()
 
@@ -84,4 +90,9 @@ container.bind<IMediaService>(TYPES.MediaService).to(S3MediaService)
 container.bind<IHotelAdminRepository>(TYPES.HotelAdminRepository).to(HotelAdminRepository)
 container.bind<IHotelAdminService>(TYPES.HotelAdminService).to(HotelAdminService)
 container.bind<IHotelAdminController>(TYPES.HotelAdminController).to(HotelAdminController)
+
+//menuItems
+container.bind<IMenuRepository>(TYPES.MenuItemRepository).to(MenuItemRepository)
+container.bind<IMenuItemService>(TYPES.MenuItemService).to(MenuItemService)
+container.bind<IMenuItemController>(TYPES.MenuItemController).to(MenuItemController)
 export {container}

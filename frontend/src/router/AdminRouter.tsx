@@ -6,6 +6,7 @@ import StaffManagementPage from '../features/admin/staff/pages/StaffManagementPa
 import ProductCategoryPage from '../features/admin/category/pages/ProductCategoryPage'
 import TablesPage from '../features/admin/table/pages/TablesPage'
 import AdminProfilePage from '../features/admin/profile/pages/AdminProfilePage'
+import ProductListPage from '../features/admin/products/pages/ProductListPage'
 
 
 export default function AdminRouter() {
@@ -45,6 +46,11 @@ export default function AdminRouter() {
           <Route
             path='/profile'
             element={<AdminProfilePage/>}
+            
+          />
+          <Route
+            path='/menu'
+            element={<ProductListPage/>}
             
           />
 

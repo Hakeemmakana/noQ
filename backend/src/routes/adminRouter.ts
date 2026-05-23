@@ -8,6 +8,7 @@ import { ITableController } from "../controllers/table/interfaces/ITableControll
 import { IStaffController } from "../controllers/staff/interfaces/IStaffController";
 import IHotelAdminController from "../controllers/hotelAdmin/interface/IHotelAdminController";
 import upload from "../middleware/multerMiddleware";
+import { IMenuItemController } from "../controllers/menu/interface/IMenuController";
 const router= Router()
 //user
 router.use(verifyAdmin)
@@ -52,5 +53,13 @@ router.route('/profile')
             .patch(hotelAdminController.updateAdminProfile)
     router.patch('/profile/profilePhotoChange',upload.single('image'),hotelAdminController.updateAdminProfilePicture)
 
+//menuItem
+const menuItemController=container.get<IMenuItemController>(TYPES.MenuItemController)
+router.route('/menu')
+          .get(menuItemController.getAllMenuItems)
+          .post(upload.single('productImage'),menuItemController.createMenuItem)
+router.route('/menu/:id')
+          .put(upload.single('productImage'),menuItemController.updateMenuItem)
+          .delete(menuItemController.deleteMenuItem)
 
 export default router

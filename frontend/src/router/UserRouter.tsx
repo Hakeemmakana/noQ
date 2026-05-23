@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom'
-import NoQApp from '../features/user/table/prvPages/TableEntry'
 import AppLayout from '../layout/user/AppLayout'
 import RestaurantOrderingLanding from '../features/user/table/pages/RestaurantOrderingLanding'
 import ProfilePage from '../features/user/profile/pages/ProfilePage'

@@ -24,6 +24,7 @@ const adminMeta: Record<AdminSection, PageMeta> = {
     menu: {
         title: "Menu Management",
         subtitle: "Add, edit, and organize menu items.",
+        isSearch:true
     },
     orders: {
         title: "Orders Management",

@@ -76,6 +76,15 @@ export const FILE_IS_REQURIED='file is required'
 export const PROFILE_UPDATE_SUCCESS='Profile updated successfully'
 export const UPLOAD_PORFILE_FAILED="Failed to upload profile image"
 export const ADMIN_NOT_FOUND='Admin not found'
-
+//menu items
+export const MENU_ITEM_CREATE_SUCCESS = "Menu item created successfully";
+export const MENU_ITEM_UPDATE_SUCCESS = "Menu item updated successfully";
+export const MENU_ITEM_DELETE_SUCCESS = "Menu item deleted successfully";
+export const MENU_ITEM_STATUS_CHANGE_SUCCESS = "Menu item status changed successfully";
+export const MENU_ITEM_NAME_EXIST = "Menu item name already exists.";
+export const MENU_ITEM_NOT_EXIST = "Menu item does not exist.";
+export const MENU_ITEM_ID_REQUIRED = "Menu item id is required";
+export const MENU_ITEM_NOT_FOUND = "Menu item not found";
+export const MENU_ITEM_FETCH_SUCCESS = "Menu items fetched successfully";
 
 

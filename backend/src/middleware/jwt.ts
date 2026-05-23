@@ -67,6 +67,7 @@ const verifyAdmin = async (req: AuthRequest, res: Response, next: NextFunction) 
             return
         }
         const token = authHeader.split(' ')[1]
+        console.log(token)
         if (!token) {
             return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'No Token Provided' })
         }
@@ -76,6 +77,7 @@ const verifyAdmin = async (req: AuthRequest, res: Response, next: NextFunction) 
                 message: 'Access denied. Admin privileges required.'
             });
         }
+        console.log('decode,',decode)
         const admin = await adminRepo.getById(decode.id)
         if (!admin) {
             return res.status(HttpStatus.NOT_FOUND).json({ message: 'user Not provided' })
