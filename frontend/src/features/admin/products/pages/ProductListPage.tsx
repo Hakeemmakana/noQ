@@ -53,7 +53,7 @@ export default function ProductListPage() {
         if (!form.status) newErrors.status = "Status is required";
         if (!form.type) newErrors.type = "Type is required";
 
-        if (form.type === "stock" && (!form.stock || Number(form.stock) < 0)) {
+        if (form.type === "quick" && (!form.stock || Number(form.stock) < 0)) {
             newErrors.stock = "Valid stock is required";
         }
 

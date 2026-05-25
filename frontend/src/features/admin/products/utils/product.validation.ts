@@ -17,7 +17,7 @@ export const validateProductForm = (values: ProductFormValues) => {
   if (!values.status) errors.status = "Status is required";
   if (!values.type) errors.type = "Type is required";
 
-  if (values.type === "stock") {
+  if (values.type === "quick") {
     if (!values.stock.trim()) {
       errors.stock = "Stock is required";
     } else if (Number(values.stock) < 0) {
