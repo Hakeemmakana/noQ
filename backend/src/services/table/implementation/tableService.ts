@@ -6,7 +6,6 @@ import { ITable } from "../../../models/table";
 import { AppError } from "../../../middleware/errorHandler";
 import { TABLE_NAME_EXIST, TABLE_NOT_AVAILABLE, TABLE_NOT_EXIST } from "../../../constants/messages";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { PaginatedResult } from "../../../types/pagination";
 import { convertTableDto, getOneTable, getOneTableDto, getTableDto, IGetTableDto, ITableReqDto } from "../../../dtos/admin/table/table-create.dto";
 import { getTableWithHotelDetails, IPaginatedTableData, ITableResponseDto, ITablewithHotelDetailsResponseDto, toPaginatedTableResponse } from "../../../dtos/admin/table/table-response.dto";
 @injectable()
@@ -62,15 +61,17 @@ export default class TableService implements ITableService {
         return await this._tableRepository.deleteTable(id)
     }
     getTable = async (data:getOneTable): Promise<ITablewithHotelDetailsResponseDto> => {
+        console.log(data)
         const tableDto=getOneTableDto(data)
-        const table = await this._tableRepository.getTableById(tableDto.id)
+        console.log('tableDto',tableDto)
+        const table = await this._tableRepository.getTableById(tableDto.tableId)
         if (!table || table.hotelId.toString() !== tableDto.hotelId) {
             throw new AppError(TABLE_NOT_EXIST, HttpStatus.NOT_FOUND)
         }
         if (!table.isAvailable) {
             throw new AppError(TABLE_NOT_AVAILABLE, HttpStatus.NOT_FOUND)
         }
-        const res= await this._tableRepository.getTableWithHotelDetails(tableDto.id)
+        const res= await this._tableRepository.getTableWithHotelDetails(tableDto.tableId)
         const dto=getTableWithHotelDetails(res!)
         return dto
 

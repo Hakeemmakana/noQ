@@ -8,7 +8,7 @@ import ICategoryRepository from "../../../repositories/category/interfaces/ICate
 import { AppError } from "../../../middleware/errorHandler";
 import { CATEGORY_NAME_EXIST, CATEGORY_NOT_EXIST } from "../../../constants/messages";
 import HttpStatus from "../../../constants/httpStatusCode";
-import {  ICategoryResponseDto, toPaginatedCategoryResponse } from "../../../dtos/admin/category/category-response.dto";
+import {  categoryResponseForUser, ICategoryResponseDto, ICategoryResponseForUserDto, toPaginatedCategoryResponse } from "../../../dtos/admin/category/category-response.dto";
 import { createCategoryDto, getCategoryDto, ICategoryReqDto, IGetCategoryDto, IUpdateCategoryReqDto, updateCategoryDto } from "../../../dtos/admin/category/category-create.dto";
 @injectable()
 export default class CategoryService implements ICategoryService {
@@ -28,6 +28,12 @@ export default class CategoryService implements ICategoryService {
         const limit = 8
         const res=await this._categoryRepository.getAllCategory(dataFrom.searchVal , dataFrom.page, limit, hotelId)
         const outDto =toPaginatedCategoryResponse(res)
+        return outDto
+
+    }
+    getAllCategoryForUser = async ( hotelId: string): Promise<ICategoryResponseForUserDto[]> => {
+        const res=await this._categoryRepository.getAllCategoryForUser(hotelId)
+        const outDto =categoryResponseForUser(res!)
         return outDto
 
     }

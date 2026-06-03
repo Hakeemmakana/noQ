@@ -9,7 +9,6 @@ import { NextFunction, Response } from "express";
 import { TYPES } from "../../../DI/types";
 import IHotelAdminService from "../../../services/hotelAdmin/interface/IHotelAdminService";
 import { adminResponseDto } from "../../../dtos/admin/hotelAdminDto/admin.response.dto";
-import { adminProfileInputDto } from "../../../dtos/admin/hotelAdminDto/admin-input.dto";
 import { validateAdminProfileForm } from "../../../validation/updateProfileAdminValidation";
 @injectable()
 export default class HotelAdminController implements IHotelAdminController{

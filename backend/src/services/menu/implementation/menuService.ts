@@ -3,18 +3,20 @@ import { TYPES } from "../../../DI/types";
 
 import { IMenuItem } from "../../../models/menuItem";
 import { AppError } from "../../../middleware/errorHandler";
-import { MENU_ITEM_NAME_EXIST, MENU_ITEM_NOT_FOUND, MENU_ITEM_NOT_EXIST } from "../../../constants/messages";
+import { MENU_ITEM_NAME_EXIST, MENU_ITEM_NOT_EXIST, } from "../../../constants/messages";
 import HttpStatus from "../../../constants/httpStatusCode";
 import IMenuItemService from "../interface/IMenuService";
 import IMenuRepository from "../../../repositories/menu/interface/IMenuRespository";
-import { covertMenuInputDto, getMenuItemDto, IGetMenuItemDto, menuItemReqDto } from "../../../dtos/menuItems/menu-req-dto";
+import { covertMenuInputDto, getMenuItemDto, getMenuItemUserDto, IFilterMenuItem, IGetMenuItemDto, menuItemReqDto } from "../../../dtos/menuItems/menu-req-dto";
 import { IPaginatedMenuItemData, menuItemResDto, toPaginatedMenuItemResponse } from "../../../dtos/menuItems/menu-res.dto";
 import IMediaService from "../../mediaService/interface/IMediaService";
+import IHotelAdminRepository from "../../../repositories/hotelAdmin/interface/IHotelAdminRepository";
 
 @injectable()
 export default class MenuItemService implements IMenuItemService {
     constructor(@inject(TYPES.MenuItemRepository) private _menuItemRepository: IMenuRepository,
-                @inject(TYPES.MediaService)private _mediaService:IMediaService) { }
+                @inject(TYPES.MediaService) private _mediaService:IMediaService,
+                @inject(TYPES.HotelAdminRepository) private _hotelAdminRepository:IHotelAdminRepository) { }
 
     createMenuItem = async (data: menuItemReqDto, hotelId: string,file: Express.Multer.File): Promise<IMenuItem> => {
         const dto = covertMenuInputDto(data)
@@ -43,6 +45,7 @@ export default class MenuItemService implements IMenuItemService {
 
     updateMenuItem = async (id: string, hotelId: string, data: menuItemReqDto,file:string| Express.Multer.File): Promise<IMenuItem | null> => {
         const dto = covertMenuInputDto(data)
+        console.log('menuServicelayer',dto)
         if (dto.itemName) {
             const existMenuItemName = await this._menuItemRepository.findByName(dto.itemName, hotelId, id)
             if (existMenuItemName) {
@@ -78,6 +81,13 @@ export default class MenuItemService implements IMenuItemService {
         }
 
         return await this._menuItemRepository.deleteMenuItem(id)
+    }
+    getAllUserMenuItems=async(filter: IFilterMenuItem,hotelId:string,page:number): Promise<IPaginatedMenuItemData<menuItemResDto>>=> {
+         const dto = getMenuItemUserDto(filter)
+        const limit = 8
+        const menuItem = await this._menuItemRepository.getAllUserMenuItems(dto,limit,hotelId!,page)
+        const outDto = toPaginatedMenuItemResponse(menuItem)
+        return outDto
     }
 
     // getMenuItem = async (data: getOneMenuItem): Promise<IMenuItemwithHotelDetailsResponseDto> => {

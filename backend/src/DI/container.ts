@@ -52,6 +52,12 @@ import IMenuItemService from '../services/menu/interface/IMenuService'
 import MenuItemService from '../services/menu/implementation/menuService'
 import { IMenuItemController } from '../controllers/menu/interface/IMenuController'
 import MenuItemController from '../controllers/menu/implements/menuController'
+import { ICartRepository } from '../repositories/cart/interface/ICartRepository'
+import CartRepository from '../repositories/cart/implementation/cartRepository'
+import ICartService from '../services/cart/interface/ICartService'
+import CartService from '../services/cart/implementation/cartService'
+import ICartController from '../controllers/cart/interface/ICartController'
+import cartController from '../controllers/cart/implementation/cartController'
 
 const container=new Container()
 
@@ -95,4 +101,9 @@ container.bind<IHotelAdminController>(TYPES.HotelAdminController).to(HotelAdminC
 container.bind<IMenuRepository>(TYPES.MenuItemRepository).to(MenuItemRepository)
 container.bind<IMenuItemService>(TYPES.MenuItemService).to(MenuItemService)
 container.bind<IMenuItemController>(TYPES.MenuItemController).to(MenuItemController)
+
+//cart 
+container.bind<ICartRepository>(TYPES.CartRepository).to(CartRepository)
+container.bind<ICartService>(TYPES.CartService).to(CartService)
+container.bind<ICartController>(TYPES.CartController).to(cartController)
 export {container}

@@ -5,6 +5,7 @@ import cors from 'cors'
 import userRouter from './routes/userRouter'
 import auth from './routes/authRouter'
 import admin from './routes/adminRouter'
+import tenantRouter from './routes/tenantRouter'
 import connectDB from './config/db'
 import { connectRedis } from './config/redis' 
 import "reflect-metadata";
@@ -30,6 +31,7 @@ app.use(cors({
 app.use('/auth',auth)
 app.use('/admin',admin)
 app.use('/',userRouter)
+app.use('/:slug',tenantRouter)
 app.use(errorHandler)
 async function start(){
     connectDB()

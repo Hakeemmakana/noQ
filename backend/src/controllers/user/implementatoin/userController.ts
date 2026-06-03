@@ -6,10 +6,8 @@ import IUserService from "../../../services/user/interface/IUserService";
 import HttpStatus from "../../../constants/httpStatusCode";
 import { FILE_IS_REQURIED, PROFILE_UPDATE_SUCCESS, USER_NOT_FOUND, VALIDATION_FAILED } from "../../../constants/messages";
 import { AuthRequest } from "../../../middleware/jwt";
-import { updateUserProfileFormateDto } from "../../../dtos/user/create-user.dto";
 import { validateUpdateProfile } from "../../../validation/updateUserValidation";
 import { AppError } from "../../../middleware/errorHandler";
-import { userDataMapping } from "../../../dtos/user/user-response.dto";
 @injectable()
 export default class UserController implements IUserController {
     constructor(@inject(TYPES.UserService) private _userService: IUserService) { }

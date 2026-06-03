@@ -7,9 +7,8 @@ import { TYPES } from "../../../DI/types";
 import { AppError } from "../../../middleware/errorHandler";
 import { INVALID_STATUS, STAFF_CREATE_SUCCESS, STAFF_DELETE_SUCCESS, STAFF_FETCH_SUCCESS, STAFF_ID_REQUIRED, STAFF_NOT_FOUND, STAFF_STATUS_CHANGE_SUCCESS, STAFF_UPDATE_SUCCESS, VALIDATION_FAILED } from "../../../constants/messages";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { createStaffDto, getStaffDto, IGetStaffDto } from "../../../dtos/admin/staff/staff-create.dto";
+import { IGetStaffDto } from "../../../dtos/admin/staff/staff-create.dto";
 import { validateStaffForm } from "../../../validation/staffValidation";
-import { toPaginatedStaffResponse } from "../../../dtos/admin/staff/staff.response.dto";
 @injectable()
 export default class StaffController implements IStaffController {
     constructor(@inject(TYPES.StaffService) private _StaffService: IStaffService) {}

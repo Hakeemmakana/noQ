@@ -3,11 +3,11 @@ export interface ICreateCategoryDto{
     description:string;
     isAvailable:boolean;
 }
-interface fromFrontData{
-    name:string;
-    description:string;
-    status:'active'|'inactive'
-}
+// interface fromFrontData{
+//     name:string;
+//     description:string;
+//     status:'active'|'inactive'
+// }
 export interface IGetCategoryDto{
     searchVal:string;
     page:number;

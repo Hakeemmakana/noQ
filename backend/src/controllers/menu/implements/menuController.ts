@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import HttpStatus from "../../../constants/httpStatusCode";
 import { 
     INVALID_STATUS, 
@@ -19,7 +19,7 @@ import { AuthRequest } from "../../../middleware/jwt";
 import { IMenuItemController } from "../interface/IMenuController";
 import { validateMenuItemForm } from "../../../validation/menuValidation";
 import IMenuItemService from "../../../services/menu/interface/IMenuService";
-import { IGetMenuItemDto } from "../../../dtos/menuItems/menu-req-dto";
+import { IFilterMenuItem, IGetMenuItemDto } from "../../../dtos/menuItems/menu-req-dto";
 
 @injectable()
 export default class MenuItemController implements IMenuItemController {
@@ -45,8 +45,6 @@ export default class MenuItemController implements IMenuItemController {
     createMenuItem = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const hotelId = req.admin?.id as string;
-            const menuImage=req.file
-            console.log(req.body)
             const validate = validateMenuItemForm(req.body);
             if (!validate.isValid) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors);
@@ -158,6 +156,23 @@ export default class MenuItemController implements IMenuItemController {
             next(error);
         }
     };
+    getAllMenuUserSide=async(req:AuthRequest,res:Response,next:NextFunction):Promise<void>=>{
+        const filter=JSON.parse(req.query.filters as string)
+        const page=Number(req.query.page) || 1
+        const hotelId=req.hotelId
+        
+        try {
+             const data = await this._MenuItemService.getAllUserMenuItems(filter as unknown as IFilterMenuItem,hotelId!,page);
+
+            res.status(HttpStatus.OK).json({
+                message: MENU_ITEM_FETCH_SUCCESS,
+                data: data
+            });
+            return;
+        } catch (error) {
+            next(error)
+        }
+    }
 
     // getMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     //     try {

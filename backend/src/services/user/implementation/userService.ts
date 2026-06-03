@@ -40,17 +40,21 @@ export default class UserService implements IUserService {
     getProfile=async(userId:string):Promise<IUserMappedData>=>{
         const user= await this._userRepository.getProfile(userId)
         const mappedUser = userDataMapping(user!)
+        if(mappedUser.imageUrl){
+            mappedUser.imageUrl=await this._MediaService.getSignedUrl(mappedUser.imageUrl)
+        }
         return mappedUser
     }
-    updateUserProfilePicture=async(userId: string, file: Express.Multer.File): Promise<IUser | null>=> {
-        let imageUrl:string|undefined
+    updateUserProfilePicture=async(userId: string, file: Express.Multer.File): Promise<{imageUrl:string}>=> {
+        let imagePath:string|undefined
         if(file){
-            imageUrl=await this._MediaService.upload(file)
+            imagePath=await this._MediaService.uploadProfile(file)
         }
-        if(!imageUrl){
+        if(!imagePath){
             throw new AppError(UPLOAD_PORFILE_FAILED,HttpStatus.INTERNAL_SERVER_ERROR)
         }
-        const updateUser=await this._userRepository.updateUserProfile(userId,{imageUrl})
-        return updateUser
+        await this._userRepository.updateUserProfile(userId,{imageUrl:imagePath})
+        const signedUrl=await this._MediaService.getSignedUrl(imagePath)
+        return {imageUrl:signedUrl}
     }
 }

@@ -41,6 +41,7 @@ export const productService = {
       const res = await adminApi.put(`/${ADMIN_ROUTE}/menu/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log(id,data)
       return res?.data?.data;
     } catch (error) {
       throw getErrorMessage(error);

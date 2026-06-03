@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify";
 import { IStaff } from "../../../models/staff";
-import { PaginatedResult } from "../../../types/pagination";
 import IStaffService from "../interfaces/IStaffService";
 import { TYPES } from "../../../DI/types";
 import { IStaffRepository } from "../../../repositories/staff/interfaces/IStaffRepository";

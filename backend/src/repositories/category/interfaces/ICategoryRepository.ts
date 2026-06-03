@@ -6,6 +6,7 @@ import { PaginatedResult } from "../../../types/pagination";
 export default interface ICategoryRepository{
     createCategory(data:ICreateCategoryDto,hotelId:string):Promise<ICategory>;
     getAllCategory(search: string, page: number, limit: number, hotelId: string): Promise<PaginatedResult<ICategory>> 
+    getAllCategoryForUser(hotelId: string): Promise<ICategory[]|null> 
     getCategoryById(id:string):Promise<ICategory | null>;
     updateCategory(id:string,data:IUpdateCategoryDto):Promise<ICategory | null>;
     statusChangeCategory(id:string,status:string):Promise<ICategory | null>;

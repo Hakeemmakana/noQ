@@ -3,13 +3,12 @@ import { ICategoryController } from "../interfaces/ICatetoryController";
 import { validateCategoryForm } from "../../../validation/categoryValidation";
 import { AppError } from "../../../middleware/errorHandler";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { createCategoryDto, getCategoryDto, IGetCategoryDto } from "../../../dtos/admin/category/category-create.dto";
+import { IGetCategoryDto } from "../../../dtos/admin/category/category-create.dto";
 import { CATEGORY_CREATE_SUCCESS, CATEGORY_DELETE_SUCCESS, CATEGORY_FETCH_SUCCESS, CATEGORY_ID_REQUIRED, CATEGORY_NOT_FOUND, CATEGORY_STATUS_CHANGE_SUCCESS, CATEGORY_UPDATE_SUCCESS, INVALID_STATUS, VALIDATION_FAILED } from "../../../constants/messages";
 import { AuthRequest } from "../../../middleware/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import ICategoryService from "../../../services/category/interfaces/ICategoryService";
-import {  toPaginatedCategoryResponse } from "../../../dtos/admin/category/category-response.dto";
 @injectable()
 export default class CategoryController implements ICategoryController {
     constructor(@inject(TYPES.CategoryService) private _CategoryService: ICategoryService) { }
@@ -139,4 +138,16 @@ export default class CategoryController implements ICategoryController {
             next(error);
         }
     };
+    getAllCategoryForUser=async(req:AuthRequest , res: Response, next: NextFunction): Promise<void> =>{
+        try {
+            const hotelId=req.hotelId
+            const resData=await this._CategoryService.getAllCategoryForUser(hotelId!)
+            res.status(HttpStatus.OK).json({
+                message: CATEGORY_FETCH_SUCCESS,
+                data: resData
+            })
+        } catch (error) {
+            next(error)
+        }
+    }
 }

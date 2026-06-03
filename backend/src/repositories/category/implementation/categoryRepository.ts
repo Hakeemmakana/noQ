@@ -35,6 +35,16 @@ export default class CategoryRepository extends BaseRepository<ICategory> implem
         }
         return await this.getPaginatedData(filter, page, limit)
     }
+    async getAllCategoryForUser( hotelId: string): Promise<ICategory[]|null> {
+        const hotelObjectId=new Types.ObjectId(hotelId)
+        const filter: QueryFilter<ICategory> = {
+            isAvailable:true,
+            isDeleted: false,
+            hotelId: hotelObjectId
+        }
+        
+        return await this.getAll(filter)
+    }
     async getCategoryById(id: string): Promise<ICategory | null> {
         return await this.getById(id)
     }

@@ -10,5 +10,5 @@ export default interface IUserService{
     deleteUser(usrerId:string):Promise<IUser|null>;
     updateUserProfile(userId:string,data:updateUserProfileInput):Promise<IUserMappedData>
     getProfile(userId:string):Promise<IUserMappedData>
-    updateUserProfilePicture(userId:string,file:Express.Multer.File):Promise<IUser|null>
+    updateUserProfilePicture(userId:string,file:Express.Multer.File):Promise<{imageUrl:string}>
 }

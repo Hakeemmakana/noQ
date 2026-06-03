@@ -10,7 +10,7 @@ export interface ITableReqDto{
     status:'active'|'inactive'
 }
 export interface getOneTable{
-    id:string;
+    tableId:string;
     hotelId:string;
 }
 export interface IGetTableDto{
@@ -34,7 +34,7 @@ export const getTableDto=(data:IGetTableDto):IGetTableDto=>{
 }
 export const getOneTableDto=(data:getOneTable):getOneTable=>{
     return {
-        id:data.id,
+        tableId:data.tableId,
         hotelId:data.hotelId
     }
 }

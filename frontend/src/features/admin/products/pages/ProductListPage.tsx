@@ -1,7 +1,7 @@
 // ProductListPage.tsx
 import { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
-import { Pencil, Plus, Trash2, X } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import Pagination from "../../../common/CommonPagination";
 import { productService } from "../service/productService";
 import type {
@@ -62,6 +62,7 @@ export default function ProductListPage() {
         }
 
         setErrors(newErrors);
+        console.log(newErrors,console.log(form))
         return Object.keys(newErrors).length === 0;
     };
 
@@ -113,6 +114,7 @@ export default function ProductListPage() {
 
     const openEditModal = (product: IProduct) => {
         setEditData(product);
+        console.log('[product]',product)
         setErrors({});
         setForm({
             productName: product.productName,
@@ -128,7 +130,9 @@ export default function ProductListPage() {
     };
 
     const handleSubmit = async () => {
+        console.log('erternrd')
         if (!validateForm()) return;
+        console.log('validated')
 
         try {
             setSubmitLoading(true);

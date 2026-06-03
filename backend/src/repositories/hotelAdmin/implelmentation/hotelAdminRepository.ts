@@ -13,5 +13,8 @@ export default class HotelAdminRepository extends BaseRepository<IHotelAdmin> im
         async getProfile(hotelId:string):Promise<IHotelAdmin|null>{
             return await this.getById(hotelId)
         }
+        async getHotelBySlug(slug:string):Promise<IHotelAdmin|null>{
+            return await this.getByFilter({slug})
+        }
 
 }

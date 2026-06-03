@@ -19,6 +19,7 @@ type JwtPayloadWithUser = {
 export interface AuthRequest extends Request {
     user?: JwtPayloadType;
     admin?:JwtPayloadType
+    hotelId?: string;
 }
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET

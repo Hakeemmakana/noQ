@@ -6,6 +6,8 @@ import QrScannerSheet from "../components/QrScannerSheet";
 import TableDetectedModal from "../components/TableDetectedModal";
 import { validateQrLink } from "../service/orderingService";
 import type { ScanQrApiResponse, ScanState } from "../types/orderingType"
+import { useDispatch } from "react-redux";
+import { saveTable } from "../slice/tableSlice";
 
 export default function RestaurantOrderingLanding() {
   const navigate = useNavigate();
@@ -15,7 +17,7 @@ export default function RestaurantOrderingLanding() {
   const [error, setError] = useState("");
   const [detectedHotel, setDetectedHotel] = useState<ScanQrApiResponse | null>(null);
   const { hotelId, tableId } = useParams();
-
+const dispatch=useDispatch()
   useEffect(() => {
     const autoValidate = async () => {
       // if no params don't call API
@@ -68,7 +70,10 @@ export default function RestaurantOrderingLanding() {
 
   const handleContinue = () => {
     if (!detectedHotel?.hotelSlug) return;
-    navigate(`/${detectedHotel.hotelSlug}/menu`);
+    // navigate(`/${detectedHotel.hotelSlug}/menu`);
+    console.log(detectedHotel)
+    dispatch(saveTable({tableId:detectedHotel.tableId,tableNo:detectedHotel.tableNumber}))
+    navigate('/menu');
   };
 
   return (

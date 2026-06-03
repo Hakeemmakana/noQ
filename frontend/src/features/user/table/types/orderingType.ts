@@ -4,8 +4,9 @@ export type ScanQrApiResponse = {
   message: string;
   hotelName: string;
   hotelSlug: string;
-  tableNumber: number | string;
+  tableNumber: string;
   hotelImage: string;
+  tableId:string;
 };
 
 export type ScanState = "idle" | "scanning" | "validating" | "success" | "error";

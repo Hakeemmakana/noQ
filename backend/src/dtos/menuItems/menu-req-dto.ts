@@ -1,6 +1,7 @@
 
 
 
+
 export interface menuItemReqDto {
     productName: string;
     category: string;
@@ -26,6 +27,12 @@ export interface IGetMenuItemDto{
     searchVal:string;
     page:number;
 }
+export interface IFilterMenuItem{
+    category?:string;
+    search:string;
+    price?:number;
+    type:string;
+}
 export function covertMenuInputDto(data: menuItemReqDto):MenuItemInputDto {
     return {
         itemName: data.productName,
@@ -45,3 +52,12 @@ export const getMenuItemDto=(data:IGetMenuItemDto):IGetMenuItemDto=>{
 
     }
 }
+export const getMenuItemUserDto=(data:IFilterMenuItem):IFilterMenuItem=>{
+    return {
+            category:data.category,
+            search:data.search,
+            price:Number(data.price),
+            type:data.type
+        }
+
+    }

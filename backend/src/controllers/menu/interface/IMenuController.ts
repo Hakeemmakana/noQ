@@ -7,5 +7,6 @@ export interface IMenuItemController {
     statusChangeMenuItem(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     updateMenuItem(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     deleteMenuItem(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
+    getAllMenuUserSide(req:Request,res:Response,next:NextFunction):Promise<void>
     // getMenuItem(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

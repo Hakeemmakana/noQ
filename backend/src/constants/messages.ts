@@ -87,4 +87,13 @@ export const MENU_ITEM_ID_REQUIRED = "Menu item id is required";
 export const MENU_ITEM_NOT_FOUND = "Menu item not found";
 export const MENU_ITEM_FETCH_SUCCESS = "Menu items fetched successfully";
 
+export const CART_NOT_FOUND = 'Cart not found';
+export const PRODUCT_STOCK_EXCEEDED = 'Product stock exceeded';
+export const CART_ITEM_NOT_FOUND='Cart item not found'
+export const PRODUCT_OUT_OF_STOCK='Product is out of stock'
+export const CART_ADD_SUCCESS='Item added to cart successfully'
+export const CART_REMOVE_SUCCESS='Item removed from cart successfully'
+export const CART_FETCH_SUCCESS='Cart fetched succeddfully'
+export const CART_FETCH_FAILED='Cart fetching failed'
+
 

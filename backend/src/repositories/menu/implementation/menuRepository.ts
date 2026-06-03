@@ -1,13 +1,13 @@
 import MenuItem, { IMenuItem } from "../../../models/menuItem";
 import { PaginatedResult } from "../../../types/pagination";
 import { BaseRepository } from "../../IBaseRepository";
-import {QueryFilter, Types} from 'mongoose'
+import { QueryFilter, Types } from 'mongoose'
 import IMenuRepository from "../interface/IMenuRespository";
-import { MenuItemInputDto } from "../../../dtos/menuItems/menu-req-dto";
+import { IFilterMenuItem, MenuItemInputDto } from "../../../dtos/menuItems/menu-req-dto";
 
 type CreateMenuItemData = Partial<IMenuItem> & {
-  hotelId: Types.ObjectId;
-  category:Types.ObjectId
+    hotelId: Types.ObjectId;
+    category: Types.ObjectId
 };
 
 export default class MenuItemRepository extends BaseRepository<IMenuItem> implements IMenuRepository {
@@ -17,10 +17,10 @@ export default class MenuItemRepository extends BaseRepository<IMenuItem> implem
 
     async createMenuItem(data: MenuItemInputDto, hotelId: string): Promise<IMenuItem> {
         const hotelObjectId = new Types.ObjectId(hotelId);
-        const categoryObjectId=new Types.ObjectId(data.category)
+        const categoryObjectId = new Types.ObjectId(data.category)
         const menuItemData: CreateMenuItemData = {
             ...data,
-            category:categoryObjectId,
+            category: categoryObjectId,
             isDeleted: false,
             hotelId: hotelObjectId
         };
@@ -53,7 +53,7 @@ export default class MenuItemRepository extends BaseRepository<IMenuItem> implem
 
     async statusChangeMenuItem(id: string, status: string): Promise<IMenuItem | null> {
         const updateData = {
-            status: status 
+            status: status
         };
         return await this.updateById(id, updateData);
     }
@@ -74,6 +74,34 @@ export default class MenuItemRepository extends BaseRepository<IMenuItem> implem
         }
 
         return await this.getByFilter(query);
+    }
+    async getAllUserMenuItems(data: IFilterMenuItem, limit: number, hotelId:string, page: number) {
+        const hotelObjectId = new Types.ObjectId(hotelId);
+        const filter: QueryFilter<IMenuItem> = {
+            isDeleted: false,
+            hotelId:hotelObjectId,
+            isAvailable: true,
+
+        };
+
+        if (data.search) {
+            filter.$or = [
+                { itemName: { $regex: `^${data.search}`, $options: 'i' } },
+            ];
+        }
+        if(data.category){
+            filter.category=data.category
+        }
+        if (data.price) {
+            filter.price = {
+                $lte: data.price
+            };
+        }
+        if(data.type){
+            filter.type=data.type
+        }
+        return await this.getPaginatedData(filter, page, limit);
+
     }
 
 }

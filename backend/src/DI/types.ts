@@ -44,6 +44,11 @@ export const TYPES = {
     MenuItemService: Symbol.for('MenuItemService'),
     MenuItemController: Symbol.for('MenuItemController'),
 
+    //cart
+    CartRepository:Symbol.for('CartRepository'),
+    CartService:Symbol.for('CartService'),
+    CartController:Symbol.for('CartController')
+
 
 
 }

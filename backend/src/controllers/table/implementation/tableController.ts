@@ -9,7 +9,6 @@ import { AppError } from "../../../middleware/errorHandler";
 import { AuthRequest } from "../../../middleware/jwt";
 import {  getOneTable, IGetTableDto } from "../../../dtos/admin/table/table-create.dto";
 import { validateTableForm } from "../../../validation/tableValidation";
-import { getTableWithHotelDetails, toPaginatedTableResponse } from "../../../dtos/admin/table/table-response.dto";
 @injectable()
 export default class TableController implements ITableController {
     constructor(@inject(TYPES.TableService) private _TableService: ITableService) { }

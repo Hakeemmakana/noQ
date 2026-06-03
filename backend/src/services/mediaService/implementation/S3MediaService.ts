@@ -32,7 +32,7 @@ export default class S3MediaService implements IMediaService {
             Body: file.buffer,
             ContentType: file.mimetype
         }
-        const result = await this.s3.upload(params).promise();
+         await this.s3.upload(params).promise();
         return key
     }
     async delete(fileUrl: string): Promise<void> {

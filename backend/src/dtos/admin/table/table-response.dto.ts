@@ -42,6 +42,7 @@ export interface ITablewithHotelDetailsResponseDto {
     hotelSlug:string;
     tableNumber:string;
     hotelImage:string;
+    tableId:string
 }
 export function getTableWithHotelDetails(data:ITable): ITablewithHotelDetailsResponseDto {
     const hotel=data.hotelId as IHotelAdmin
@@ -49,6 +50,7 @@ export function getTableWithHotelDetails(data:ITable): ITablewithHotelDetailsRes
         hotelName: hotel.restaurantName,
         hotelSlug: hotel.slug,
         tableNumber: data.tableNumber,
-        hotelImage: hotel.imageUrl??''
+        hotelImage: hotel.imageUrl??'',
+        tableId:data?._id?.toString()??''
     }
 }

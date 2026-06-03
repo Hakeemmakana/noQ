@@ -1,4 +1,4 @@
-import mongoose, { Schema, HydratedDocument, ObjectId } from 'mongoose';
+import mongoose, { Schema, HydratedDocument} from 'mongoose';
 
 export interface IMenuItem{
   _id?:mongoose.Types.ObjectId;
