@@ -71,7 +71,6 @@ export default function AdminProfilePage() {
       try {
         const res = await fetchProfile();
         setProfile(res);
-        console.log(res.imageUrl)
         setProfileForm({
           restaurantName: res.restaurantName,
           email: res.email,
@@ -240,10 +239,10 @@ export default function AdminProfilePage() {
       const res = await uploadProfileImage(selectedImage);
       setProfile((prev) => ({
         ...prev,
-        imageUrl: res.imageUrl,
+        imageUrl: res.data.imageUrl,
       }));
-      setProfilePic(res.imageUrl);
-      dispatch(setAdminImage(res.imageUrl));
+      setProfilePic(res.data.imageUrl);
+      dispatch(setAdminImage(res.data.imageUrl));
       successToast(res.message);
       setShowImagePopup(false);
       setSelectedImage(null);

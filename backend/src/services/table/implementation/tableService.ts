@@ -61,9 +61,7 @@ export default class TableService implements ITableService {
         return await this._tableRepository.deleteTable(id)
     }
     getTable = async (data:getOneTable): Promise<ITablewithHotelDetailsResponseDto> => {
-        console.log(data)
         const tableDto=getOneTableDto(data)
-        console.log('tableDto',tableDto)
         const table = await this._tableRepository.getTableById(tableDto.tableId)
         if (!table || table.hotelId.toString() !== tableDto.hotelId) {
             throw new AppError(TABLE_NOT_EXIST, HttpStatus.NOT_FOUND)

@@ -26,7 +26,6 @@ export default function ProductFormModal({
   handleSubmit,
 }: Props) {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
       <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white dark:bg-zinc-900">
@@ -104,7 +103,7 @@ export default function ProductFormModal({
                 setForm({
                   ...form,
                   type: e.target.value as "kitchen" | "quick",
-                  stock: e.target.value === "kitchen" ? "" : form.stock,
+                  // stock: e.target.value === "kitchen" ? "" : form.stock,
                 })
               }
               className="w-full rounded-xl border border-zinc-300 bg-white px-3 py-2.5 dark:border-zinc-700 dark:bg-zinc-950 dark:text-white"
@@ -114,7 +113,7 @@ export default function ProductFormModal({
             </select>
           </div>
 
-          {form.type === "quick" && (
+          {/* {form.type === "quick" && ( */}
             <div>
               <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">
                 Stock
@@ -127,7 +126,7 @@ export default function ProductFormModal({
               />
               {errors.stock && <p className="mt-1 text-xs text-red-500">{errors.stock}</p>}
             </div>
-          )}
+          {/* )} */}
 
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-200">

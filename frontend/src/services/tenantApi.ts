@@ -26,7 +26,6 @@ tenantApi.interceptors.request.use((config) => {
     if(slug&&config.url){
         config.url=`/${slug}${config.url}`
     }
-    console.log('lastRrl',config.url)
     return config;
 }, (error) => Promise.reject(error));
 

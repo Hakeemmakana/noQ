@@ -3,6 +3,7 @@ export type ProductType = "kitchen" | "quick";
 export type ProductStatus = "available" | "unavailable";
 
 export interface ICategory {
+  _id?:string;
   id: string;
   name: string;
   description: string;

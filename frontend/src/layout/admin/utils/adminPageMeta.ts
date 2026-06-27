@@ -7,28 +7,31 @@ type AdminSection =
     | "users"
     | "categories"
     | "profile"
+    | "order"
 
 type PageMeta = {
     title: string;
     subtitle: string;
     isSearch?: boolean;
-    isSort?:boolean
+    isSort?: boolean
+    isFullPage?:boolean
 };
 
 const adminMeta: Record<AdminSection, PageMeta> = {
     dashboard: {
         title: "Dashboard",
         subtitle: "Welcome back. Here's what is happening today.",
-        isSort:true
+        isSort: true
     },
     menu: {
         title: "Menu Management",
         subtitle: "Add, edit, and organize menu items.",
-        isSearch:true
+        isSearch: true
     },
     orders: {
         title: "Orders Management",
         subtitle: "Manage and track all customer orders.",
+        isSearch: true,
     },
     tables: {
         title: "Tables Management",
@@ -53,8 +56,13 @@ const adminMeta: Record<AdminSection, PageMeta> = {
     profile: {
         title: "Profile Management",
         subtitle: "Manage hotel profile and security settings.",
-        isSort:false
+        isSort: false
     },
+    order:{
+        title: "Orders Management",
+        subtitle: "Manage and track all customer orders.",
+        isFullPage:true
+    }
 };
 
 function getAdminSection(pathname: string): AdminSection {

@@ -13,7 +13,6 @@ import type {
 import { errorToast, successToast } from "../../../../shared/utils/toastNotification";
 import ProductFormModal from "../components/ProductFormModal";
 import ProductDeleteModal from "../components/ProductDeleteModal";
-
 const initialForm: ProductFormValues = {
     productName: "",
     category: "",
@@ -53,7 +52,7 @@ export default function ProductListPage() {
         if (!form.status) newErrors.status = "Status is required";
         if (!form.type) newErrors.type = "Type is required";
 
-        if (form.type === "quick" && (!form.stock || Number(form.stock) < 0)) {
+        if (!form.stock || Number(form.stock) < 0) {
             newErrors.stock = "Valid stock is required";
         }
 
@@ -62,7 +61,6 @@ export default function ProductListPage() {
         }
 
         setErrors(newErrors);
-        console.log(newErrors,console.log(form))
         return Object.keys(newErrors).length === 0;
     };
 
@@ -114,11 +112,10 @@ export default function ProductListPage() {
 
     const openEditModal = (product: IProduct) => {
         setEditData(product);
-        console.log('[product]',product)
         setErrors({});
         setForm({
             productName: product.productName,
-            category: typeof product.category === "string" ? product.category : product.category?.id || "",
+            category: typeof product.category === "string" ? product.category : product.category._id || "",
             description: product.description,
             price: String(product.price),
             type: product.type,
@@ -130,9 +127,7 @@ export default function ProductListPage() {
     };
 
     const handleSubmit = async () => {
-        console.log('erternrd')
         if (!validateForm()) return;
-        console.log('validated')
 
         try {
             setSubmitLoading(true);
@@ -145,7 +140,7 @@ export default function ProductListPage() {
             formData.append("type", form.type);
             formData.append("status", form.status);
 
-            if (form.type === "quick") {
+            if (form.type === "quick"||form.type=='kitchen') {
                 formData.append("stock", form.stock);
             }
 
@@ -154,7 +149,6 @@ export default function ProductListPage() {
             }
 
             if (editData) {
-                console.log(editData)
                 await productService.editProduct(editData.id, formData);
                 successToast("Product updated successfully");
             } else {

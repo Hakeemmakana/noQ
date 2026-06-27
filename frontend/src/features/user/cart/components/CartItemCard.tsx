@@ -1,5 +1,5 @@
 // src/modules/menu/components/cart/CartItemCard.tsx
-import React from "react";
+import React, { useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import type { CartItem } from "../types/cartTypes";
 
@@ -18,7 +18,8 @@ const CartItemCard: React.FC<Props> = ({
   onRemove,
   loading = false,
 }) => {
-    const product=  item;
+  const [delteModal, setDeleteModal] = useState(false)
+  const product = item;
   const productId = product?.id || item.productId || "";
   const quantity = item.quantity || 1;
   const unitPrice = product?.price ?? item.price ?? 0;
@@ -91,13 +92,33 @@ const CartItemCard: React.FC<Props> = ({
               </p>
 
               <button
-                onClick={() => onRemove(productId)}
+                // onClick={() => onRemove(productId)}
+                onClick={() => setDeleteModal(!delteModal)}
                 disabled={loading}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-red-200 text-red-600 transition hover:bg-red-50 disabled:opacity-50 dark:border-red-900/60 dark:text-red-400 dark:hover:bg-red-950/40"
                 aria-label="Remove item"
               >
                 <Trash2 size={16} />
               </button>
+              {delteModal && (
+                <>
+                  <button
+                    onClick={() => setDeleteModal(false)}
+                    type="button"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={() => onRemove(productId)}
+                    type="button"
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </>)}
+
             </div>
           </div>
         </div>

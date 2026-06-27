@@ -40,7 +40,9 @@ export default class MenuItemRepository extends BaseRepository<IMenuItem> implem
             ];
         }
 
-        return await this.getPaginatedData(filter, page, limit);
+        const result=await this.getPaginatedData(filter, page, limit);
+        result.data=await this.model.populate(result.data,{path:'category',select: '_id name'})
+        return result
     }
 
     async getMenuItemById(id: string): Promise<IMenuItem | null> {
@@ -100,7 +102,9 @@ export default class MenuItemRepository extends BaseRepository<IMenuItem> implem
         if(data.type){
             filter.type=data.type
         }
-        return await this.getPaginatedData(filter, page, limit);
+        const result=await this.getPaginatedData(filter, page, limit);
+        result.data=await this.model.populate(result.data,{path:'category',select: '_id name'})
+        return result
 
     }
 

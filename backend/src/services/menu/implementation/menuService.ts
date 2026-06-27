@@ -20,7 +20,6 @@ export default class MenuItemService implements IMenuItemService {
 
     createMenuItem = async (data: menuItemReqDto, hotelId: string,file: Express.Multer.File): Promise<IMenuItem> => {
         const dto = covertMenuInputDto(data)
-        console.log("from service ",dto,file)
         if (dto.itemName) {
             const existMenuItem = await this._menuItemRepository.findByName(dto.itemName, hotelId)
             if (existMenuItem) {
@@ -45,7 +44,6 @@ export default class MenuItemService implements IMenuItemService {
 
     updateMenuItem = async (id: string, hotelId: string, data: menuItemReqDto,file:string| Express.Multer.File): Promise<IMenuItem | null> => {
         const dto = covertMenuInputDto(data)
-        console.log('menuServicelayer',dto)
         if (dto.itemName) {
             const existMenuItemName = await this._menuItemRepository.findByName(dto.itemName, hotelId, id)
             if (existMenuItemName) {
@@ -57,7 +55,6 @@ export default class MenuItemService implements IMenuItemService {
             throw new AppError(MENU_ITEM_NOT_EXIST, HttpStatus.NOT_FOUND)
         }
         if(file &&file!==menuItemIsExist.itemImage&&typeof file!=='string'){
-            console.log(menuItemIsExist.itemImage,file)
            const url = await this._mediaService.upload(file)
            await this._mediaService.delete(menuItemIsExist.itemImage)
            dto.itemImage=url

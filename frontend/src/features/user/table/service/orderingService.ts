@@ -2,9 +2,9 @@
 
 import userApi from "../../../../services/userApi";
 import getErrorMessage from "../../../../utils/getErrorMessage";
-import type { ScanQrApiResponse } from "../types/orderingType";
+import type { Idata, ScanQrApiResponse } from "../types/orderingType";
 
-export async function validateQrLink(qrUrl: string): Promise<ScanQrApiResponse> {
+export async function validateQrLink(qrUrl: string): Promise<Idata> {
     let apiUrl=qrUrl
     if(qrUrl.startsWith('http')){
         const parts=qrUrl.split('/').filter(Boolean)
@@ -16,7 +16,7 @@ export async function validateQrLink(qrUrl: string): Promise<ScanQrApiResponse> 
 try {
     
     const response = await userApi.get<ScanQrApiResponse>(`/table/${apiUrl}`);
-    return response.data;
+    return response.data.data 
 } catch (error) {
     throw(getErrorMessage(error))
 }

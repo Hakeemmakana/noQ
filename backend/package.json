@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "stripe": "stripe listen --forward-to localhost:4001/webhook"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,8 @@
     "nodemailer": "^8.0.6",
     "redis": "^5.12.1",
     "reflect-metadata": "^0.2.2",
+    "stripe": "^22.2.0",
+    "uuid": "^14.0.1",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
   },

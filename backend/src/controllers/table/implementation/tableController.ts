@@ -7,8 +7,9 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import { AppError } from "../../../middleware/errorHandler";
 import { AuthRequest } from "../../../middleware/jwt";
-import {  getOneTable, IGetTableDto } from "../../../dtos/admin/table/table-create.dto";
+import { getOneTable, IGetTableDto } from "../../../dtos/admin/table/table-create.dto";
 import { validateTableForm } from "../../../validation/tableValidation";
+import { apiResponse } from "../../../utils/apiResponse";
 @injectable()
 export default class TableController implements ITableController {
     constructor(@inject(TYPES.TableService) private _TableService: ITableService) { }
@@ -18,11 +19,7 @@ export default class TableController implements ITableController {
             const hotelId = req.admin?.id as string
             const data = await this._TableService.getAllTable(req.query as unknown as IGetTableDto, hotelId)
 
-            
-            res.status(HttpStatus.OK).json({
-                message: TABLE_FETCH_SUCCESS,
-                data: data
-            })
+            apiResponse(res, HttpStatus.OK, TABLE_FETCH_SUCCESS, data)
             return
 
         } catch (error) {
@@ -38,8 +35,7 @@ export default class TableController implements ITableController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
             await this._TableService.createTable(req.body, hotelId)
-
-            res.status(HttpStatus.CREATED).json({ message: TABLE_CREATE_SUCCESS });
+            apiResponse(res, HttpStatus.CREATED, TABLE_CREATE_SUCCESS)
             return
         } catch (error) {
             next(error);
@@ -52,31 +48,18 @@ export default class TableController implements ITableController {
             const status = req.body.status
             const hotelId = req.admin?.id as string
             if (!id) {
-                res.status(400).json({
-                    message: TABLE_ID_REQUIRED,
-                });
-                return
+                throw new AppError(TABLE_ID_REQUIRED, HttpStatus.NOT_FOUND)
             }
             if (status !== "active" && status !== "inactive") {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    message: INVALID_STATUS,
-                });
-                return
+                throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST)
             }
             const result = await this._TableService.statusChangeTable(id, hotelId, status);
 
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: TABLE_NOT_FOUND,
-                });
-                return
+                throw new AppError(TABLE_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: TABLE_STATUS_CHANGE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, TABLE_STATUS_CHANGE_SUCCESS, result)
             return
         } catch (error) {
             next(error);
@@ -98,17 +81,10 @@ export default class TableController implements ITableController {
             const result = await this._TableService.updateTable(id, hotelId, req.body);
 
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: TABLE_NOT_FOUND,
-                });
-                return
+                throw new AppError(TABLE_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: TABLE_UPDATE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, TABLE_UPDATE_SUCCESS, result)
             return
         } catch (error) {
             next(error);
@@ -126,37 +102,30 @@ export default class TableController implements ITableController {
             const result = await this._TableService.deleteTable(id, hotelId);
 
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: TABLE_NOT_FOUND,
-                });
-                return
+                throw new AppError(TABLE_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-
-
-            res.status(HttpStatus.OK).json({
-                message: TABLE_DELETE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, TABLE_DELETE_SUCCESS, result)
             return
         } catch (error) {
             next(error);
         }
     };
-    getTable=async(req: Request, res: Response, next: NextFunction): Promise<void>=> {
+    getTable = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const { hotelId , tableId } = req.params;
-            if(!hotelId||!tableId){
-                throw new AppError(VALIDATION_FAILED,HttpStatus.BAD_REQUEST)
+            const { hotelId, tableId } = req.params;
+            if (!hotelId || !tableId) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST)
             }
             const result = await this._TableService.getTable(req.params as unknown as getOneTable);
-            if(!result){
-                throw new AppError(TABLE_NOT_FOUND,HttpStatus.NOT_FOUND)
+            if (!result) {
+                throw new AppError(TABLE_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-            res.status(HttpStatus.OK).json({
-                success: true,
-                ...result
-            }); 
-            
+            const data = {
+                ...result,
+                success: true
+            }
+            apiResponse(res, HttpStatus.OK, TABLE_DELETE_SUCCESS, data)
+
         } catch (error) {
             next(error)
         }

@@ -9,6 +9,7 @@ import { AuthRequest } from "../../../middleware/jwt";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import ICategoryService from "../../../services/category/interfaces/ICategoryService";
+import { apiResponse } from "../../../utils/apiResponse";
 @injectable()
 export default class CategoryController implements ICategoryController {
     constructor(@inject(TYPES.CategoryService) private _CategoryService: ICategoryService) { }
@@ -17,10 +18,7 @@ export default class CategoryController implements ICategoryController {
             const data= req.query
             const hotelId = req.admin?.id as string
             const resData = await this._CategoryService.getAllCategory(data as unknown as IGetCategoryDto, hotelId)
-            res.status(HttpStatus.OK).json({
-                message: CATEGORY_FETCH_SUCCESS,
-                data: resData
-            })
+            apiResponse(res, HttpStatus.OK,CATEGORY_FETCH_SUCCESS,resData)
             return
         } catch (error) {
             next(error);
@@ -35,8 +33,7 @@ export default class CategoryController implements ICategoryController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validatedData.errors)
             }
             await this._CategoryService.createCategory(req.body, hotelId)
-
-            res.status(HttpStatus.CREATED).json({ message: CATEGORY_CREATE_SUCCESS });
+            apiResponse(res, HttpStatus.CREATED,CATEGORY_CREATE_SUCCESS)
             return
         } catch (error) {
             next(error);
@@ -50,31 +47,18 @@ export default class CategoryController implements ICategoryController {
             const status = req.body.status
             const hotelId = req.admin?.id as string
             if (!id) {
-                res.status(400).json({
-                    message: CATEGORY_ID_REQUIRED,
-                });
-                return
+                throw new AppError(CATEGORY_ID_REQUIRED, HttpStatus.BAD_REQUEST)
             }
             if (status !== "active" && status !== "inactive") {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    message: INVALID_STATUS,
-                });
-                return
+                throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST)
             }
             const result = await this._CategoryService.statusChangeCategory(id, hotelId, status);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: CATEGORY_NOT_FOUND,
-                });
-                return
+                throw new AppError(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: CATEGORY_STATUS_CHANGE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK,CATEGORY_STATUS_CHANGE_SUCCESS,result)
             return
         } catch (error) {
             next(error);
@@ -90,19 +74,12 @@ export default class CategoryController implements ICategoryController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
             const result = await this._CategoryService.updateCategory(id, hotelId, req.body);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: CATEGORY_NOT_FOUND,
-                });
-                return
+                throw new AppError(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: CATEGORY_UPDATE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK,CATEGORY_UPDATE_SUCCESS,result)
             return
 
         } catch (error) {
@@ -119,19 +96,12 @@ export default class CategoryController implements ICategoryController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST)
             }
             const result = await this._CategoryService.deleteCategory(id, hotelId);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: CATEGORY_NOT_FOUND,
-                });
-                return
+                throw new AppError(CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: CATEGORY_DELETE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK,CATEGORY_DELETE_SUCCESS,result)
             return
 
         } catch (error) {
@@ -142,10 +112,7 @@ export default class CategoryController implements ICategoryController {
         try {
             const hotelId=req.hotelId
             const resData=await this._CategoryService.getAllCategoryForUser(hotelId!)
-            res.status(HttpStatus.OK).json({
-                message: CATEGORY_FETCH_SUCCESS,
-                data: resData
-            })
+            apiResponse(res, HttpStatus.OK,CATEGORY_FETCH_SUCCESS,resData)
         } catch (error) {
             next(error)
         }

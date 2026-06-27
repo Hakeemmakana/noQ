@@ -7,6 +7,7 @@ export interface IUserMappedData {
     isAdmin?: boolean;
     phone: string;
     imageUrl?: string
+    isVerified:boolean;
     dob?:string;
 }
 
@@ -15,6 +16,7 @@ export const userDataMapping = (user: IUser): IUserMappedData => {
         _id: user?._id?.toString()??'',
         name: user.name,
         email: user.email,
+        isVerified:user.isVerified,
         // isAdmin: user.isAdmin,
         phone: user.phone,
         imageUrl: user.imageUrl,

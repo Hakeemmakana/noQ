@@ -9,6 +9,7 @@ import { IStaffController } from "../controllers/staff/interfaces/IStaffControll
 import IHotelAdminController from "../controllers/hotelAdmin/interface/IHotelAdminController";
 import upload from "../middleware/multerMiddleware";
 import { IMenuItemController } from "../controllers/menu/interface/IMenuController";
+import IOrderController from "../controllers/order/interface/IOrderController";
 const router= Router()
 //user
 router.use(verifyAdmin)
@@ -61,5 +62,9 @@ router.route('/menu')
 router.route('/menu/:id')
           .put(upload.single('productImage'),menuItemController.updateMenuItem)
           .delete(menuItemController.deleteMenuItem)
+  //order
+const orderController = container.get<IOrderController>(TYPES.OrderController)
+router.get('/orders', orderController.getAllAdminOrders)
+router.get('/order/:id', orderController.getOneOrder)
 
 export default router

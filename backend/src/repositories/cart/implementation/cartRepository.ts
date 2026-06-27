@@ -2,7 +2,7 @@ import { QueryFilter, Types } from "mongoose";
 import Cart, { ICart } from "../../../models/cart";
 import { BaseRepository } from "../../IBaseRepository";
 import { ICartRepository } from "../interface/ICartRepository";
-import { CreateCartData,  } from "../../../dtos/cart/other.dto";
+import { CreateCartData,  } from "../../../dtos/cart/cart.dto";
 import { injectable } from "inversify";
 @injectable()
 export default class CartRepository extends BaseRepository<ICart> implements ICartRepository {
@@ -109,7 +109,6 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
             userId: userObjectId
         }
         const res=await this.getOneWithPopulate(filter).populate('items.itemId')
-        console.log(res,'in repo')
         return res
     
     }

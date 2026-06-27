@@ -8,6 +8,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import { emailRegex, passwordRegex } from "../../../constants/regex";
 import { INVALID_EMAIL, LOGGED_IN_SUCCESS, LOGGED_OUT_MESSAGE,NO_REFRESH_TOKEN_FOUND } from "../../../constants/messages";
+import { apiResponse } from "../../../utils/apiResponse";
 
 const refreshTokenMaxAge =
     Number(process.env.REFRESH_TOKEN_MAX_AGE) || 7 * 24 * 60 * 60 * 1000;
@@ -25,7 +26,7 @@ export class AuthController implements IAuthController {
             }
             
             const { message } = await this._authService.register(parsed.data)
-            res.status(HttpStatus.OK).json({ message })
+            apiResponse(res, HttpStatus.OK, message)
         } catch (error) {
             next(error)
         }
@@ -69,9 +70,7 @@ export class AuthController implements IAuthController {
                 secure: false,
                 sameSite: 'strict'
             });
-
-            res.status(HttpStatus.OK).json({ message: LOGGED_OUT_MESSAGE })
-
+            apiResponse(res, HttpStatus.OK, LOGGED_OUT_MESSAGE)
         } catch (error) {
             next(error)
         }
@@ -84,7 +83,7 @@ export class AuthController implements IAuthController {
                 throw new AppError(INVALID_EMAIL, HttpStatus.BAD_REQUEST);
             }
             const { status, message } = await this._authService.forgetPassword(email);
-            res.status(status).json({ message: message });
+            apiResponse(res, status, message)
         } catch (error) {
             next(error)
         }
@@ -96,7 +95,7 @@ export class AuthController implements IAuthController {
                 throw new AppError(INVALID_EMAIL, HttpStatus.BAD_REQUEST)
             }
             const { message, status } = await this._authService.resendOtp(email.trim(), purpose)
-            res.status(status).json({ message: message })
+            apiResponse(res, status, message)
 
         } catch (error) {
             next(error)
@@ -112,7 +111,7 @@ export class AuthController implements IAuthController {
                 throw new AppError('Enter valid password', HttpStatus.BAD_REQUEST)
             }
             const { message } = await this._authService.resetPassword(token, newPassword)
-            res.json({ message })
+            apiResponse(res, HttpStatus.OK, message)
 
         } catch (error) {
             next(error)

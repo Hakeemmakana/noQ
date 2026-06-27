@@ -3,6 +3,7 @@ import {
   ChevronDown,
   LogOut,
   Moon,
+  Package,
   Search,
   ShoppingCart,
   Sun,
@@ -41,13 +42,13 @@ export default function AppHeader({
   onLogout,
   onProfileClick,
 }: AppHeaderProps) {
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
   const location = useLocation();
   const pathSegments = location.pathname.split("/").filter(Boolean);
   const isMenuPage = pathSegments[pathSegments.length - 1] === "menu";
-  
+
   const initials =
     user?.name
       ?.split(" ")
@@ -117,7 +118,7 @@ export default function AppHeader({
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <button
               type="button"
-              onClick={()=>navigate('/cart')}
+              onClick={() => navigate('/cart')}
               className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
               aria-label="Toggle cart"
             >
@@ -159,9 +160,8 @@ export default function AppHeader({
                 )}
 
                 <ChevronDown
-                  className={`hidden h-4 w-4 text-slate-500 transition-transform sm:block ${
-                    isProfileOpen ? "rotate-180" : ""
-                  }`}
+                  className={`hidden h-4 w-4 text-slate-500 transition-transform sm:block ${isProfileOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -191,6 +191,19 @@ export default function AppHeader({
                   >
                     <UserCircle2 className="h-4 w-4" />
                     My Profile
+                  </button>
+
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      navigate("/orders");
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  >
+                    <Package className="h-4 w-4" />
+                    My Orders
                   </button>
 
                   <button

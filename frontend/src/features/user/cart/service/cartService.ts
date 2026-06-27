@@ -6,8 +6,7 @@ export const cartService = {
   async getCart() {
     try {
       const res = await tenantApi.get('/cartWithProduct');
-      console.log(res.data.cartData)
-      return res?.data?.cartData;
+      return res?.data?.data;
     } catch (error) {
       throw getErrorMessage(error);
     }
@@ -15,7 +14,6 @@ export const cartService = {
 
   async addToCart(productId: string) {
     try {
-      console.log('addtoCart',productId)
       const res = await tenantApi.post('/addToCart', {
         itemId:productId,
       });

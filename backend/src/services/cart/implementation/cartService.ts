@@ -7,7 +7,7 @@ import { TYPES } from "../../../DI/types";
 import { AppError } from "../../../middleware/errorHandler";
 import { CART_ITEM_NOT_FOUND, CART_NOT_FOUND, PRODUCT_NOT_FOUND, PRODUCT_OUT_OF_STOCK, PRODUCT_STOCK_EXCEEDED } from "../../../constants/messages";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { CartwithProductDto,  toCartWithProductDto } from "../../../dtos/admin/category/category-response.dto";
+import { CartwithProductDto, toCartWithProductDto } from "../../../dtos/cart/cart.response.dto";
 @injectable()
 export default class CartService implements ICartService{
     constructor(@inject(TYPES.CartRepository) private _cartRepository:ICartRepository,

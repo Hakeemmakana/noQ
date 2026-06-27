@@ -4,10 +4,11 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
 import IUserService from "../../../services/user/interface/IUserService";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { FILE_IS_REQURIED, PROFILE_UPDATE_SUCCESS, USER_NOT_FOUND, VALIDATION_FAILED } from "../../../constants/messages";
+import { FILE_IS_REQURIED, PROFILE_UPDATE_SUCCESS, USER_DELETE_SUCCESS, USER_FETCH_SUCCESS, USER_ID_REQUIRED, USER_NOT_FOUND, USER_STATUS_UPDATE_SUCCESS, USER_UPDATE_SUCCESS, VALIDATION_FAILED } from "../../../constants/messages";
 import { AuthRequest } from "../../../middleware/jwt";
 import { validateUpdateProfile } from "../../../validation/updateUserValidation";
 import { AppError } from "../../../middleware/errorHandler";
+import { apiResponse } from "../../../utils/apiResponse";
 @injectable()
 export default class UserController implements IUserController {
     constructor(@inject(TYPES.UserService) private _userService: IUserService) { }
@@ -16,11 +17,7 @@ export default class UserController implements IUserController {
             const page = Number(req.query.page) || 1
             const search = req.query.search || ''
             const usersData = await this._userService.getAllUsers(search as string, page);
-            res.status(200).json({
-                success: true,
-                message: "Users fetched successfully",
-                data: usersData
-            });
+            apiResponse(res, HttpStatus.OK, USER_FETCH_SUCCESS, usersData)
         } catch (error) {
             next(error)
         }
@@ -33,20 +30,12 @@ export default class UserController implements IUserController {
 
             // 1. Validate input
             if (!userId || !status) {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    success: false,
-                    message: "userId and status are required",
-                });
-                return;
+                throw new AppError('userId and status are required', HttpStatus.BAD_REQUEST)
             }
 
             // 2. Validate status
             if (!["active", "blocked"].includes(status)) {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    success: false,
-                    message: "Invalid status value",
-                });
-                return;
+                throw new AppError('Invalid status value', HttpStatus.BAD_REQUEST)
             }
 
             const updatedUser = await this._userService.statusChange(
@@ -54,18 +43,10 @@ export default class UserController implements IUserController {
                 status
             );
             if (!updatedUser) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    success: false,
-                    message: USER_NOT_FOUND,
-                });
-                return;
+                throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
+            apiResponse(res, HttpStatus.OK, USER_STATUS_UPDATE_SUCCESS, updatedUser)
 
-            res.status(200).json({
-                success: true,
-                message: "User status updated successfully",
-                data: updatedUser,
-            });
         } catch (error) {
             next(error)
         }
@@ -74,27 +55,15 @@ export default class UserController implements IUserController {
         try {
             const userId = req.params.id as string;
             if (!userId) {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    success: false,
-                    message: "User ID is required",
-                });
-                return;
+                throw new AppError(USER_ID_REQUIRED, HttpStatus.BAD_REQUEST)
             }
 
             const deletedUser = await this._userService.deleteUser(userId);
 
             if (!deletedUser) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    success: false,
-                    message: USER_NOT_FOUND,
-                });
-                return;
+                throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-
-            res.status(HttpStatus.OK).json({
-                success: true,
-                message: "User deleted successfully",
-            });
+            apiResponse(res, HttpStatus.OK, USER_DELETE_SUCCESS)
         } catch (error) {
             next(error);
         }
@@ -110,10 +79,7 @@ export default class UserController implements IUserController {
             if (!user) {
                 throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-            res.json({
-                message: 'User details updated successfully',
-                data: user
-            })
+            apiResponse(res, HttpStatus.OK, USER_UPDATE_SUCCESS)
         } catch (error) {
             next(error)
         }
@@ -125,31 +91,25 @@ export default class UserController implements IUserController {
             if (!user) {
                 throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-            
-            res.json({
-                message: 'success',
-                data: user
-            })
+            apiResponse(res, HttpStatus.OK, USER_FETCH_SUCCESS, user)
         } catch (error) {
             next(error)
         }
     }
     updateUserProfilePicture = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
-           
+
             const userId = req.user?.id as string
             if (!req.file) {
                 throw new AppError(FILE_IS_REQURIED, HttpStatus.BAD_REQUEST)
             }
             const updatedUser = await this._userService.updateUserProfilePicture(userId, req.file)
             if (!updatedUser) {
-                throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND)
+                throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
-            res.status(HttpStatus.OK).json({
-                success:true,
-                message:PROFILE_UPDATE_SUCCESS,
-                imageUrl:updatedUser.imageUrl
-            })
+            const data={imageUrl: updatedUser.imageUrl}
+            apiResponse(res, HttpStatus.OK, PROFILE_UPDATE_SUCCESS, data)
+            
 
         } catch (error) {
             next(error)

@@ -18,7 +18,7 @@ export interface IMenuItem{
 const MenuItemSchema = new Schema<IMenuItem>({
   itemName: { type: String,required:true },
   itemImage: { type: String,required:true },
-  category: { type: Schema.Types.ObjectId,required:true },
+  category: { type: Schema.Types.ObjectId,required:true,ref:'Category'},
   isAvailable: { type: Boolean,default:true },
   description: { type: String,required:true },
   price: { type: Number,required:true },

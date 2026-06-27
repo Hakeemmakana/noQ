@@ -40,7 +40,7 @@ export class BaseRepository<T> {
     }
     async getPaginatedData(filter: QueryFilter<T>, page: number, limit: number): Promise<PaginatedResult<T>> {
         const skip = (page - 1) * limit
-        const data = await this.model.find(filter).skip(skip).limit(limit)
+        const data = await this.model.find(filter).sort({createdAt:-1}).skip(skip).limit(limit)
         const total = await this.model.countDocuments(filter)
         return {
             data,
@@ -50,6 +50,7 @@ export class BaseRepository<T> {
             totalPages: Math.ceil(total / limit),
         }
     }
+   
     getByIdWithPopulate(id: string): Query<T | null, T> {
         return this.model.findOne({ _id: id, isDeleted: false, })
     }

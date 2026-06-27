@@ -1,15 +1,15 @@
 import { NextFunction, Response } from "express";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { 
-    INVALID_STATUS, 
-    MENU_ITEM_CREATE_SUCCESS, 
-    MENU_ITEM_DELETE_SUCCESS, 
-    MENU_ITEM_FETCH_SUCCESS, 
-    MENU_ITEM_ID_REQUIRED, 
-    MENU_ITEM_NOT_FOUND, 
-    MENU_ITEM_STATUS_CHANGE_SUCCESS, 
-    MENU_ITEM_UPDATE_SUCCESS, 
-    VALIDATION_FAILED 
+import {
+    INVALID_STATUS,
+    MENU_ITEM_CREATE_SUCCESS,
+    MENU_ITEM_DELETE_SUCCESS,
+    MENU_ITEM_FETCH_SUCCESS,
+    MENU_ITEM_ID_REQUIRED,
+    MENU_ITEM_NOT_FOUND,
+    MENU_ITEM_STATUS_CHANGE_SUCCESS,
+    MENU_ITEM_UPDATE_SUCCESS,
+    VALIDATION_FAILED
 } from "../../../constants/messages";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
@@ -20,6 +20,7 @@ import { IMenuItemController } from "../interface/IMenuController";
 import { validateMenuItemForm } from "../../../validation/menuValidation";
 import IMenuItemService from "../../../services/menu/interface/IMenuService";
 import { IFilterMenuItem, IGetMenuItemDto } from "../../../dtos/menuItems/menu-req-dto";
+import { apiResponse } from "../../../utils/apiResponse";
 
 @injectable()
 export default class MenuItemController implements IMenuItemController {
@@ -32,10 +33,7 @@ export default class MenuItemController implements IMenuItemController {
             const hotelId = req.admin?.id as string;
             const data = await this._MenuItemService.getAllMenuItems(req.query as unknown as IGetMenuItemDto, hotelId);
 
-            res.status(HttpStatus.OK).json({
-                message: MENU_ITEM_FETCH_SUCCESS,
-                data: data
-            });
+            apiResponse(res, HttpStatus.OK, MENU_ITEM_FETCH_SUCCESS, data)
             return;
         } catch (error) {
             next(error);
@@ -49,9 +47,9 @@ export default class MenuItemController implements IMenuItemController {
             if (!validate.isValid) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors);
             }
-            await this._MenuItemService.createMenuItem(req.body, hotelId,req.file!);
+            await this._MenuItemService.createMenuItem(req.body, hotelId, req.file!);
 
-            res.status(HttpStatus.CREATED).json({ message: MENU_ITEM_CREATE_SUCCESS });
+            apiResponse(res, HttpStatus.CREATED, MENU_ITEM_CREATE_SUCCESS)
             return;
         } catch (error) {
             next(error);
@@ -61,36 +59,21 @@ export default class MenuItemController implements IMenuItemController {
     statusChangeMenuItem = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id as string;
-            const status = req.body.status; // 'available' അല്ലെങ്കിൽ 'out_of_stock'
+            const status = req.body.status; 
             const hotelId = req.admin?.id as string;
 
             if (!id) {
-                res.status(400).json({
-                    message: MENU_ITEM_ID_REQUIRED,
-                });
-                return;
+                throw new AppError( MENU_ITEM_ID_REQUIRED, HttpStatus.BAD_REQUEST);
             }
-            
             if (status !== "available" && status !== "out_of_stock") {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    message: INVALID_STATUS,
-                });
-                return;
+                throw new AppError( INVALID_STATUS, HttpStatus.BAD_REQUEST);
             }
-            
             const result = await this._MenuItemService.statusChangeMenuItem(id, hotelId, status);
 
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: MENU_ITEM_NOT_FOUND,
-                });
-                return;
+                throw new AppError( MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
-
-            res.status(HttpStatus.OK).json({
-                message: MENU_ITEM_STATUS_CHANGE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, MENU_ITEM_STATUS_CHANGE_SUCCESS)
             return;
         } catch (error) {
             next(error);
@@ -106,24 +89,17 @@ export default class MenuItemController implements IMenuItemController {
             if (!validate.isValid || !id) {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors);
             }
-            
+
             if (!['available', 'unavailable'].includes(req.body.status)) {
                 throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST);
             }
             
-            const result = await this._MenuItemService.updateMenuItem(id, hotelId, req.body,req.file);
-
+            const result = await this._MenuItemService.updateMenuItem(id, hotelId, req.body, req.file);
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: MENU_ITEM_NOT_FOUND,
-                });
-                return;
+                throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
-
-            res.status(HttpStatus.OK).json({
-                message: MENU_ITEM_UPDATE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, MENU_ITEM_UPDATE_SUCCESS)
             return;
         } catch (error) {
             next(error);
@@ -139,35 +115,24 @@ export default class MenuItemController implements IMenuItemController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
             }
             const result = await this._MenuItemService.deleteMenuItem(id, hotelId);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: MENU_ITEM_NOT_FOUND,
-                });
-                return;
+                throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
-
-            res.status(HttpStatus.OK).json({
-                message: MENU_ITEM_DELETE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, MENU_ITEM_DELETE_SUCCESS)
             return;
         } catch (error) {
             next(error);
         }
     };
-    getAllMenuUserSide=async(req:AuthRequest,res:Response,next:NextFunction):Promise<void>=>{
-        const filter=JSON.parse(req.query.filters as string)
-        const page=Number(req.query.page) || 1
-        const hotelId=req.hotelId
-        
-        try {
-             const data = await this._MenuItemService.getAllUserMenuItems(filter as unknown as IFilterMenuItem,hotelId!,page);
+    getAllMenuUserSide = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        const filter = JSON.parse(req.query.filters as string)
+        const page = Number(req.query.page) || 1
+        const hotelId = req.hotelId
 
-            res.status(HttpStatus.OK).json({
-                message: MENU_ITEM_FETCH_SUCCESS,
-                data: data
-            });
+        try {
+            const data = await this._MenuItemService.getAllUserMenuItems(filter as unknown as IFilterMenuItem, hotelId!, page);
+            apiResponse(res, HttpStatus.OK, MENU_ITEM_FETCH_SUCCESS,data)
             return;
         } catch (error) {
             next(error)
@@ -180,12 +145,12 @@ export default class MenuItemController implements IMenuItemController {
     //         if (!hotelId || !menuItemId) {
     //             throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
     //         }
-            
+
     //         const result = await this._MenuItemService.getMenuItem(req.params as unknown as getOneMenuItem);
     //         if (!result) {
     //             throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
     //         }
-            
+
     //         res.status(HttpStatus.OK).json({
     //             success: true,
     //             ...result

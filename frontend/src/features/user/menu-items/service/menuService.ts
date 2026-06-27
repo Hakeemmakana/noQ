@@ -20,7 +20,6 @@ export const menuService = {
   async getCategories() {
     try {
       const res = await tenantApi.get('/category');
-      console.log(res.data)
       return res?.data?.data || [];
     } catch (error) {
       throw getErrorMessage(error);

@@ -1,7 +1,7 @@
 
 import { inject, injectable } from "inversify";
 import HttpStatus from "../../../constants/httpStatusCode";
-import { FILE_IS_REQURIED, PROFILE_UPDATE_SUCCESS, USER_NOT_FOUND, VALIDATION_FAILED } from "../../../constants/messages";
+import { FILE_IS_REQURIED, PROFILE_UPDATE_SUCCESS, RESTAURANT_FETCH_SUCCESS, USER_NOT_FOUND, USER_UPDATE_SUCCESS, VALIDATION_FAILED } from "../../../constants/messages";
 import { AppError } from "../../../middleware/errorHandler";
 import { AuthRequest } from "../../../middleware/jwt";
 import IHotelAdminController from "../interface/IHotelAdminController";
@@ -10,6 +10,7 @@ import { TYPES } from "../../../DI/types";
 import IHotelAdminService from "../../../services/hotelAdmin/interface/IHotelAdminService";
 import { adminResponseDto } from "../../../dtos/admin/hotelAdminDto/admin.response.dto";
 import { validateAdminProfileForm } from "../../../validation/updateProfileAdminValidation";
+import { apiResponse } from "../../../utils/apiResponse";
 @injectable()
 export default class HotelAdminController implements IHotelAdminController{
     constructor(@inject(TYPES.HotelAdminService)private _HotelAdminService:IHotelAdminService){}
@@ -25,6 +26,7 @@ export default class HotelAdminController implements IHotelAdminController{
                  message: 'success',
                  data: user
              })
+             apiResponse(res, HttpStatus.OK,RESTAURANT_FETCH_SUCCESS)
          } catch (error) {
              next(error)
          }
@@ -42,10 +44,7 @@ export default class HotelAdminController implements IHotelAdminController{
                  throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND)
              }
              const mappedUser = adminResponseDto(user)
-             res.json({
-                 message: 'User details updated successfully',
-                 data: mappedUser
-             })
+             apiResponse(res,HttpStatus.OK,USER_UPDATE_SUCCESS,mappedUser )
          } catch (error) {
              next(error)
          }
@@ -62,11 +61,8 @@ export default class HotelAdminController implements IHotelAdminController{
              if (!updatedUser) {
                  throw new AppError(USER_NOT_FOUND,HttpStatus.NOT_FOUND)
              }
-             res.status(HttpStatus.OK).json({
-                 success:true,
-                 message:PROFILE_UPDATE_SUCCESS,
-                 imageUrl:updatedUser.imageUrl
-             })
+             const data= {imageUrl:updatedUser.imageUrl}
+             apiResponse(res, HttpStatus.OK, PROFILE_UPDATE_SUCCESS,data)
  
          } catch (error) {
             next(error)

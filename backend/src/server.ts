@@ -11,7 +11,12 @@ import { connectRedis } from './config/redis'
 import "reflect-metadata";
 import { errorHandler } from './middleware/errorHandler'
 import cookieParser from "cookie-parser";
+import ICheckoutController from './controllers/checkout/interface/ICheckoutController'
+import { container } from './DI/container'
+import { TYPES } from './DI/types'
 const app=express()
+const checkoutController=container.get<ICheckoutController>(TYPES.CheckoutController)
+app.post('/webhook', express.raw({ type: 'application/json' }),checkoutController.paymentWebhook)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

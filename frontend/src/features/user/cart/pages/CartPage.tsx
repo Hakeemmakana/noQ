@@ -139,7 +139,10 @@ const CartPage: React.FC = () => {
             </p>
           </div>
         </div>
-
+    {/* <div>
+        <button onClick={deleteConfrim}>confirm</button>
+        <button>cancel</button>
+    </div> */}
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
           <section className="space-y-4">
             {cartItems.map((item, index) => {

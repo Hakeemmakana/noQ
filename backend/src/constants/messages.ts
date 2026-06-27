@@ -18,6 +18,11 @@ export const NO_REFRESH_TOKEN_FOUND='Refresh token not found'
 export const INVALID_TOKEN='Invalid token'
 export const VALIDATION_FAILED='Validation failed'
 export const USER_ID_MISMATCH='User id dont match'
+export const USER_UPDATE_SUCCESS='User details updated successfully'
+export const USER_FETCH_SUCCESS='Users fetched successfully'
+export const USER_DELETE_SUCCESS='Users deleted successfully'
+export const USER_ID_REQUIRED='User ID is required'
+export const USER_STATUS_UPDATE_SUCCESS='User status updated successfully'
 //email
 export const INVALID_EMAIL = 'Invalid email address'
 
@@ -26,6 +31,7 @@ export const INVALID_EMAIL = 'Invalid email address'
 export const RESTAURANT_NOT_FOUND = "Restaurant account doesn't found";
 export const ACCOUNT_IS_REJECTED = "This account is rejected by Admin.";
 export const ACCOUNT_IS_PENDING = "This account is peinding.";
+export const RESTAURANT_FETCH_SUCCESS='Restorent fetched successfully'
 
 //categrory
 export const CATEGORY_CREATE_SUCCESS = "Category created successfully";
@@ -95,5 +101,9 @@ export const CART_ADD_SUCCESS='Item added to cart successfully'
 export const CART_REMOVE_SUCCESS='Item removed from cart successfully'
 export const CART_FETCH_SUCCESS='Cart fetched succeddfully'
 export const CART_FETCH_FAILED='Cart fetching failed'
+
+// order
+export const ORDER_FETCH_SUCCESS='Order fetched successfully'
+export const ORDER_NOT_FOUND='Order not found'
 
 

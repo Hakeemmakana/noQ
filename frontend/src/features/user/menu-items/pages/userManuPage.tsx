@@ -129,7 +129,6 @@ export default function UserMenuPage() {
       ]);
       
       const cartItems: CartLine[] = cartRes?.items || [];
-      console.log('carteeeres',cartItems)
       
       const cartMap = new Map(
         cartItems.map((item) => [item.itemId, item.quantity])

@@ -6,6 +6,7 @@ interface HeaderConfig {
   subtitle?: string;
   isSearch?: boolean;
   isSort?:boolean
+  isFullPage?:boolean
 }
 
 interface TopbarProps {
@@ -34,7 +35,8 @@ const handleClearSearch = () => {
     title = "Staff",
     subtitle = "Welcome back",
     isSearch = false,
-    isSort=true
+    isSort=true,
+    isFullPage=false
   } = header;
 
   return (
@@ -60,7 +62,8 @@ const handleClearSearch = () => {
       </div>
 
       <div className="w-full lg:w-auto">
-        {isSearch ? (
+        {!isFullPage&&(
+        isSearch ? (
           <div className="relative w-full lg:w-[320px]">
             <Search
               size={18}
@@ -95,7 +98,9 @@ const handleClearSearch = () => {
           </div>
         ):(
           <></>
-        )}
+        )
+      )}
+      
       </div>
     </header>
   );

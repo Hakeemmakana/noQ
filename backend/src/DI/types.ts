@@ -7,6 +7,10 @@ export const TYPES = {
 
     // Email
     EmailService: Symbol.for('EmailService'),
+    //Media
+    MediaService: Symbol.for('MediaService'),
+    //payment 
+    PaymentService:Symbol.for('PaymentService'),
 
     //User
     UserRepository: Symbol.for('UserRepository'),
@@ -31,8 +35,6 @@ export const TYPES = {
     StaffService: Symbol.for('StaffService'),
     StaffController: Symbol.for('StaffController'),
 
-    //Media
-    MediaService: Symbol.for('MediaService'),
 
     //HotelAdmin
     HotelAdminRepository: Symbol.for('HotelAdminRepository'),
@@ -47,7 +49,16 @@ export const TYPES = {
     //cart
     CartRepository:Symbol.for('CartRepository'),
     CartService:Symbol.for('CartService'),
-    CartController:Symbol.for('CartController')
+    CartController:Symbol.for('CartController'),
+
+    // checkout
+    CheckoutService:Symbol.for('CheckoutService'),
+    CheckoutController:Symbol.for('CheckoutController'),
+    
+    // order
+    OrderRepository:Symbol.for('OrderRepository'),
+    OrderService:Symbol.for('OrderService'),
+    OrderController:Symbol.for('OrderController')
 
 
 

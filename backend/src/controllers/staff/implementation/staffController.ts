@@ -9,6 +9,7 @@ import { INVALID_STATUS, STAFF_CREATE_SUCCESS, STAFF_DELETE_SUCCESS, STAFF_FETCH
 import HttpStatus from "../../../constants/httpStatusCode";
 import { IGetStaffDto } from "../../../dtos/admin/staff/staff-create.dto";
 import { validateStaffForm } from "../../../validation/staffValidation";
+import { apiResponse } from "../../../utils/apiResponse";
 @injectable()
 export default class StaffController implements IStaffController {
     constructor(@inject(TYPES.StaffService) private _StaffService: IStaffService) {}
@@ -18,10 +19,7 @@ export default class StaffController implements IStaffController {
             const hotelId = req.admin?.id as string
             const query=req.query as unknown as IGetStaffDto
             const data = await this._StaffService.getAllStaff(query, hotelId)
-            res.status(HttpStatus.OK).json({
-                message: STAFF_FETCH_SUCCESS,
-                data:data
-            })
+            apiResponse(res, HttpStatus.OK, STAFF_FETCH_SUCCESS,data)
             return
         } catch (error) {
             next(error);
@@ -36,8 +34,7 @@ export default class StaffController implements IStaffController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
             await this._StaffService.createStaff(req.body, hotelId)
-
-            res.status(HttpStatus.CREATED).json({ message: STAFF_CREATE_SUCCESS });
+            apiResponse(res, HttpStatus.CREATED, STAFF_CREATE_SUCCESS)
             return
         } catch (error) {
             next(error);
@@ -51,31 +48,18 @@ export default class StaffController implements IStaffController {
             const status = req.body.status
             const hotelId = req.admin?.id as string
             if (!id) {
-                res.status(400).json({
-                    message: STAFF_ID_REQUIRED,
-                });
-                return
+                throw new AppError(STAFF_ID_REQUIRED, HttpStatus.BAD_REQUEST)
             }
             if (status !== "active" && status !== "inactive") {
-                res.status(HttpStatus.BAD_REQUEST).json({
-                    message: INVALID_STATUS,
-                });
-                return
+                throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST)
             }
             const result = await this._StaffService.statusChangeStaff(id, hotelId, status);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: STAFF_NOT_FOUND,
-                });
-                return
+                throw new AppError(STAFF_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: STAFF_STATUS_CHANGE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, STAFF_STATUS_CHANGE_SUCCESS)
             return
         } catch (error) {
             next(error);
@@ -91,19 +75,12 @@ export default class StaffController implements IStaffController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors)
             }
             const result = await this._StaffService.updateStaff(id, hotelId, req.body);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: STAFF_NOT_FOUND,
-                });
-                return
+                throw new AppError(STAFF_NOT_FOUND, HttpStatus.NOT_FOUND, validate.errors)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: STAFF_UPDATE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, STAFF_UPDATE_SUCCESS)
             return
         } catch (error) {
             next(error);
@@ -119,19 +96,12 @@ export default class StaffController implements IStaffController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST)
             }
             const result = await this._StaffService.deleteStaff(id, hotelId);
-
+            
             if (!result) {
-                res.status(HttpStatus.NOT_FOUND).json({
-                    message: STAFF_NOT_FOUND,
-                });
-                return
+                throw new AppError(STAFF_NOT_FOUND, HttpStatus.NOT_FOUND)
             }
 
-
-            res.status(HttpStatus.OK).json({
-                message: STAFF_DELETE_SUCCESS,
-                data: result,
-            });
+            apiResponse(res, HttpStatus.OK, STAFF_DELETE_SUCCESS)
             return
 
         } catch (error) {

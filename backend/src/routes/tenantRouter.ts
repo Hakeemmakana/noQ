@@ -5,6 +5,8 @@ import { container } from '../DI/container';
 import { TYPES } from '../DI/types';
 import ICartController from '../controllers/cart/interface/ICartController';
 import { ICategoryController } from '../controllers/category/interfaces/ICatetoryController';
+import ICheckoutController from '../controllers/checkout/interface/ICheckoutController';
+import IOrderController from '../controllers/order/interface/IOrderController';
 const router = Router({ mergeParams: true })
 
 
@@ -22,6 +24,15 @@ router.patch('/deleteProductFromCart/:id', cartController.deleteProductFromCart)
 const categoryController = container.get<ICategoryController>(TYPES.CategoryController)
 router.get('/category', categoryController.getAllCategoryForUser)
 
+// checkout
+const checkoutController = container.get<ICheckoutController>(TYPES.CheckoutController)
+router.route('/checkout')
+    .get(checkoutController.getCheckout)
+    .post(checkoutController.createOrder)
+// order
+const orderController = container.get<IOrderController>(TYPES.OrderController)
+router.get('/orders', orderController.getAllOrders)
+router.get('/order/:id', orderController.getOneOrder)
 
 
 export default router

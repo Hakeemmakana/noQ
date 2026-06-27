@@ -5,7 +5,7 @@ import { ArrowRight, Loader2, QrCode, UtensilsCrossed } from "lucide-react";
 import QrScannerSheet from "../components/QrScannerSheet";
 import TableDetectedModal from "../components/TableDetectedModal";
 import { validateQrLink } from "../service/orderingService";
-import type { ScanQrApiResponse, ScanState } from "../types/orderingType"
+import type { Idata,  ScanState } from "../types/orderingType"
 import { useDispatch } from "react-redux";
 import { saveTable } from "../slice/tableSlice";
 
@@ -15,7 +15,7 @@ export default function RestaurantOrderingLanding() {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scanState, setScanState] = useState<ScanState>("idle");
   const [error, setError] = useState("");
-  const [detectedHotel, setDetectedHotel] = useState<ScanQrApiResponse | null>(null);
+  const [detectedHotel, setDetectedHotel] = useState<Idata | null>(null);
   const { hotelId, tableId } = useParams();
 const dispatch=useDispatch()
   useEffect(() => {
@@ -71,7 +71,7 @@ const dispatch=useDispatch()
   const handleContinue = () => {
     if (!detectedHotel?.hotelSlug) return;
     // navigate(`/${detectedHotel.hotelSlug}/menu`);
-    console.log(detectedHotel)
+   
     dispatch(saveTable({tableId:detectedHotel.tableId,tableNo:detectedHotel.tableNumber}))
     navigate('/menu');
   };

@@ -7,7 +7,8 @@ import { verifyUser } from "../middleware/jwt";
 import IAuthController from "../controllers/auth/interface/IAuthController";
 import upload from "../middleware/multerMiddleware";
 
-    const router =Router()
+const router =Router()
+
     router.use(verifyUser)
     // router.route('/home').get()
     const tableController=container.get<ITableController>(TYPES.TableController)
@@ -25,6 +26,9 @@ import upload from "../middleware/multerMiddleware";
     router.post('/profile/verifyOtp',authController.verifyOtp)
     router.post('/profile/resentOtp',authController.resendOtp)
     router.post('/profile/resetPassword',authController.resetPassword)
+
+    //payment
+
 
    
 

@@ -58,6 +58,18 @@ import ICartService from '../services/cart/interface/ICartService'
 import CartService from '../services/cart/implementation/cartService'
 import ICartController from '../controllers/cart/interface/ICartController'
 import cartController from '../controllers/cart/implementation/cartController'
+import ICheckoutService from '../services/chekout/interface/ICheckoutService'
+import CheckoutService from '../services/chekout/implementation/checkoutService'
+import ICheckoutController from '../controllers/checkout/interface/ICheckoutController'
+import checkoutController from '../controllers/checkout/implementation/checkoutController'
+import IPaymentGateway from '../services/paymentServic/interface/IPaymentGateway'
+import { StripePaymentGateway } from '../services/paymentServic/implementation/stripePaymentGateway'
+import IOrderRepository from '../repositories/order/interface/IOrderRepository'
+import IOrderService from '../services/order/interface/IOrderService'
+import OrderService from '../services/order/implementation/orderService'
+import IOrderController from '../controllers/order/interface/IOrderController'
+import OrderController from '../controllers/order/implementation/orderController'
+import OrderRepository from '../repositories/order/implementation/orderRepository'
 
 const container=new Container()
 
@@ -69,6 +81,10 @@ container.bind<IAuthController>(TYPES.AuthController).to(AuthController)
 
 //EmailService
 container.bind<IEmailService>(TYPES.EmailService).to(EmailService)
+//Media
+container.bind<IMediaService>(TYPES.MediaService).to(S3MediaService)
+//payment
+container.bind<IPaymentGateway>(TYPES.PaymentService).to(StripePaymentGateway)
 
 //User
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository)
@@ -90,8 +106,6 @@ container.bind<IStaffController>(TYPES.StaffController).to(StaffController)
 container.bind<ITableRepository>(TYPES.TableRepository).to(TableRepository)
 container.bind<ITableService>(TYPES.TableService).to(TableService)
 container.bind<ITableController>(TYPES.TableController).to(TableController)
-//Media
-container.bind<IMediaService>(TYPES.MediaService).to(S3MediaService)
 //HotelAdmin
 container.bind<IHotelAdminRepository>(TYPES.HotelAdminRepository).to(HotelAdminRepository)
 container.bind<IHotelAdminService>(TYPES.HotelAdminService).to(HotelAdminService)
@@ -106,4 +120,13 @@ container.bind<IMenuItemController>(TYPES.MenuItemController).to(MenuItemControl
 container.bind<ICartRepository>(TYPES.CartRepository).to(CartRepository)
 container.bind<ICartService>(TYPES.CartService).to(CartService)
 container.bind<ICartController>(TYPES.CartController).to(cartController)
+
+// checkout
+container.bind<ICheckoutService>(TYPES.CheckoutService).to(CheckoutService)
+container.bind<ICheckoutController>(TYPES.CheckoutController).to(checkoutController)
+
+//order
+container.bind<IOrderRepository>(TYPES.OrderRepository).to(OrderRepository)
+container.bind<IOrderService>(TYPES.OrderService).to(OrderService)
+container.bind<IOrderController>(TYPES.OrderController).to(OrderController)
 export {container}
