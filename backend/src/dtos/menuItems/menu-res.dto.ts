@@ -6,9 +6,9 @@ export interface menuItemResDto {
     productName: string;
     category:mongoose.Types.ObjectId;
     description: string;
-    price: number;
     type: 'kitchen' | 'quick';
     status: 'available' | 'unavailable';
+    stockMode: "SHARED" | "PER_VARIANT";
     stock?: number;
     productImage: string
 }
@@ -25,11 +25,11 @@ export function covertMenuOutputDto(data:IMenuItem):menuItemResDto{
         productName:data.itemName,
         category:data.category,
         description:data.description,
-        price:data.price,
         type:data.type,
         productImage:data.itemImage,
         status:data.isAvailable?'available':'unavailable',
-        stock:data.stock
+        stock:data.stock,
+        stockMode:data.stockMode
 
     }
 }

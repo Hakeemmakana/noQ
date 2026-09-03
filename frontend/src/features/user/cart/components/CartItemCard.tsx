@@ -50,11 +50,11 @@ const CartItemCard: React.FC<Props> = ({
               {product.productName}
             </h3>
 
-            {product.description && (
+            {/* {product.prdouctVariant && (
               <p className="line-clamp-2 text-sm text-slate-500 dark:text-slate-400">
-                {product.description}
+                {product.prdouctVariant}
               </p>
-            )}
+            )} */}
 
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
               ₹{unitPrice.toFixed(2)} each

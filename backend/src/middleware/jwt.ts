@@ -5,9 +5,11 @@ import { AuthRepository } from '../repositories/auth/implementation/authReposito
 import { ACCOUNT_IS_BLOCKED } from '../constants/messages'
 import { AppError } from './errorHandler'
 import AdminAuthRepository from '../repositories/adminAuth/implemetation/adminAuthRepository'
+import StaffAuthRepository from '../repositories/staffAuth/implementation/staffAuthRepository'
 
 const userRepo = new AuthRepository()
 const adminRepo= new AdminAuthRepository()
+const staffRepo=new StaffAuthRepository()
 type JwtPayloadType = {
     id: string;
     role: string;
@@ -20,6 +22,8 @@ export interface AuthRequest extends Request {
     user?: JwtPayloadType;
     admin?:JwtPayloadType
     hotelId?: string;
+    staffRole?:string;
+    staff?:JwtPayloadType;
 }
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET
@@ -93,6 +97,87 @@ const verifyAdmin = async (req: AuthRequest, res: Response, next: NextFunction) 
 
     }
 }
+const verifyCheff = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer')) {
+            res.status(HttpStatus.UNAUTHORIZED).json({ message: 'No Tocken Provided' })
+            return
+        }
+        const token = authHeader.split(' ')[1]
+        if (!token) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'No Token Provided' })
+        }
+        const decode = jwt.verify(token, JWT_ACCESS_SECRET as string) as JwtPayloadType
+        console.log(decode)
+        if (decode.role !== 'staff') {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                message: 'Access denied. Staff privileges required.'
+            });
+        }
+        const staff = await staffRepo.getById(decode.id)
+        if (!staff) {
+            return res.status(HttpStatus.NOT_FOUND).json({ message: 'chef Not provided' })
+        }
+        if (staff.role!=='chef') {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                message: 'Access denied. Chef privileges required.'
+            });
+        }
+        if (!staff.isActive) {
+            return res.status(HttpStatus.FORBIDDEN).json({ message: ACCOUNT_IS_BLOCKED })
+        }
+        req.staff= decode
+        req.staffRole=staff.role
+        req.hotelId=staff.hotelId.toString()
+        next()
+
+    } catch (error) {
+        console.error("JWT verification failed:", error);
+        res.status(HttpStatus.UNAUTHORIZED || 401).json({ message: "Invalid or expired token" });
+
+    }
+}
+const verifyWaiter = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer')) {
+            res.status(HttpStatus.UNAUTHORIZED).json({ message: 'No Tocken Provided' })
+            return
+        }
+        const token = authHeader.split(' ')[1]
+        if (!token) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({ message: 'No Token Provided' })
+        }
+        const decode = jwt.verify(token, JWT_ACCESS_SECRET as string) as JwtPayloadType
+        if (decode.role !== 'staff') {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                message: 'Access denied. Staff privileges required.'
+            });
+        }
+        const staff = await staffRepo.getById(decode.id)
+        if (!staff) {
+            return res.status(HttpStatus.NOT_FOUND).json({ message: 'waiter Not provided' })
+        }
+        if (!staff.isActive) {
+            return res.status(HttpStatus.FORBIDDEN).json({ message: ACCOUNT_IS_BLOCKED })
+        }
+        if (staff.role!=='waiter') {
+            return res.status(HttpStatus.FORBIDDEN).json({
+                message: 'Access denied. waiter privileges required.'
+            });
+        }
+        req.staff= decode
+        req.staffRole=staff.role
+        req.hotelId=staff.hotelId.toString()
+        next()
+
+    } catch (error) {
+        console.error("JWT verification failed:", error);
+        res.status(HttpStatus.UNAUTHORIZED || 401).json({ message: "Invalid or expired token" });
+
+    }
+}
 
 const verifyRefreshToken =  (refreshToken: string):JwtPayloadType | null => {
     try {
@@ -124,4 +209,4 @@ const verifyResetToken = (resetToken: string) => {
 }
 
 
-export { generateAccessToken, generateRefreshToken, verifyAdmin,verifyUser, verifyRefreshToken, generateResetToken, verifyResetToken }
+export { generateAccessToken, generateRefreshToken, verifyAdmin,verifyUser, verifyCheff,verifyWaiter,verifyRefreshToken, generateResetToken, verifyResetToken }

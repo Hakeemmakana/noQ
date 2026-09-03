@@ -1,6 +1,6 @@
 // src/modules/product/utils/productValidation.ts
- type ProductType = "kitchen" | "stock";
- type ProductStatus = "available" | "unavaliable";
+type ProductType = "kitchen" | "stock";
+type ProductStatus = "available" | "unavaliable";
 interface ProductFormValues {
     productName: string;
     category: string;
@@ -8,6 +8,7 @@ interface ProductFormValues {
     price: string;
     type: ProductType;
     stock: string;
+    stockMode: "SHARED" | "PER_VARIANT";
     status: ProductStatus;
     productImage: File | null;
 }
@@ -26,15 +27,18 @@ export const validateMenuItemForm = (values: ProductFormValues) => {
 
     if (!values.status) errors.status = "Status is required";
     if (!values.type) errors.type = "Type is required";
-        if (!values.stock.trim()) {
+    if (!values.stockMode)errors.stockMode='stock mode is required'
+    if(values.stockMode=='SHARED'){
+        if (!values.stock||!values.stock.trim()) {
             errors.stock = "Stock is required";
         } else if (Number(values.stock) < 0) {
             errors.stock = "Stock must be 0 or more";
         }
-    
+    }
 
-   return {
-    errors,
-    isValid:Object.keys(errors).length===0
-   }
+
+    return {
+        errors,
+        isValid: Object.keys(errors).length === 0
+    }
 };

@@ -3,7 +3,7 @@ import {
   BadgeDollarSign,
   Percent,
 } from "lucide-react";
-import type { DashboardOrder, DashboardStat } from "../types/dashboard";
+import type {  DashboardStat } from "../types/dashboard";
 
 export const dashboardStats: DashboardStat[] = [
   {
@@ -38,26 +38,3 @@ export const dashboardStats: DashboardStat[] = [
   },
 ];
 
-export const dashboardOrders: DashboardOrder[] = [
-  {
-    id: "#Q-8901",
-    customer: "John D.",
-    table: "Table 04",
-    status: "Completed",
-    amount: "$124.50",
-  },
-  {
-    id: "#Q-8902",
-    customer: "Sarah M.",
-    table: "Table 12",
-    status: "In Progress",
-    amount: "$89.20",
-  },
-  {
-    id: "#Q-8903",
-    customer: "Mike K.",
-    table: "Table 01",
-    status: "New",
-    amount: "$45.00",
-  },
-];

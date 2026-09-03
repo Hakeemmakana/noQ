@@ -186,7 +186,6 @@ export default function AdminProfilePage() {
     const errors = validateProfileForm(profileForm);
     if (Object.keys(errors).length > 0) {
       setProfileErrors(errors);
-      console.log('errrors')
       return;
     }
 

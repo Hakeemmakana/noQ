@@ -5,6 +5,7 @@ import UserRouter from './router/UserRouter'
 import AdminRouter from './router/AdminRouter'
 import AuthRouter from './router/AuthRouter'
 import { Toaster } from 'react-hot-toast'
+import StaffRouter from './router/StaffRouter'
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path='/*' element={<UserRouter/>}/>
         <Route path='/auth/*'element={<AuthRouter/>}/>
         <Route path='/admin/*' element={<AdminRouter/>}/>
+        <Route path='/staff/*' element={<StaffRouter/>}/>
       </Routes>
       </>
   )

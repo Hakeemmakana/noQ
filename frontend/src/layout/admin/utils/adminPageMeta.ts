@@ -8,6 +8,7 @@ type AdminSection =
     | "categories"
     | "profile"
     | "order"
+    |'productVarient'
 
 type PageMeta = {
     title: string;
@@ -62,7 +63,12 @@ const adminMeta: Record<AdminSection, PageMeta> = {
         title: "Orders Management",
         subtitle: "Manage and track all customer orders.",
         isFullPage:true
-    }
+    },
+    productVarient:{
+        title: "productVarient Management",
+        subtitle: "Manage and track all productVarient.",
+        isFullPage:true
+    },
 };
 
 function getAdminSection(pathname: string): AdminSection {

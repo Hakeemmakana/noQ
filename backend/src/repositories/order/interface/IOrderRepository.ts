@@ -9,4 +9,7 @@ export default interface IOrderRepository{
     getAllOrders(userId:string,hotelId:string):Promise<IOrder[]|null>;
     getAllAdminOrders(hotelId:string,search:string,page:number,limit:number):Promise<IPaginatedOrderData<IOrder>|null>;
     getOneOrder(orderId:string):Promise<IOrder|null>;
+    findActiveOrderWithoutTable(userId:string,hotelId:string):Promise<IOrder|null>
+    markOrderAsCompleted(orderId:string):Promise<IOrder|null>
+    
 }

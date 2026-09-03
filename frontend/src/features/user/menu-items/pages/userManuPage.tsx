@@ -45,6 +45,7 @@ export default function UserMenuPage() {
     category: filterParams.get("category") || "",
     type: (filterParams.get("type") ||'')as ItemType,
     price: filterParams.get("price") || "",
+    page:filterParams.get('page')||'1'
   };
   const page = parseInt(filterParams.get("page") || "1");
 
@@ -64,7 +65,7 @@ export default function UserMenuPage() {
       category: nextFilters.category || "",
       type: nextFilters.type || "",
       price: nextFilters.price || "",
-      page: "1",
+      page: nextFilters.page||"1",
     });
   };
 
@@ -79,14 +80,25 @@ export default function UserMenuPage() {
     });
   };
 
-  const handlePageChange = (newPage: number) => {
-    setFilterParams({
-      search: filters.search || "",
-      category: filters.category || "",
-      type: filters.type || "",
-      price: filters.price || "",
-      page: String(newPage),
-    });
+  const handlePageChange = async (newPage: number) => {
+    // setFilterParams({
+    //   search: filters.search || "",
+    //   category: filters.category || "",
+    //   type: filters.type || "",
+    //   price: filters.price || "",
+    //   page: String(newPage),
+    // });
+    setFilterParams(
+    (prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("page", String(newPage));
+      return next;
+    },
+    { replace: true }
+  );;
+   
+    // await fetchMenu()
+    
   };
 
   useEffect(() => {
@@ -97,7 +109,7 @@ export default function UserMenuPage() {
       } else {
         next.delete("search");
       }
-      next.set("page", "1");
+      // next.set("page", '2');
       return next;
     }, { replace: true });
   }, [debouncedSearch, setFilterParams]);
@@ -107,7 +119,7 @@ export default function UserMenuPage() {
       ...filters,
       search: filters.search,
     }),
-    [filters.search, filters.category, filters.type, filters.price]
+    [filters.search, filters.category, filters.type, filters.price,filters.page]
   );
 
   const fetchCategories = async () => {

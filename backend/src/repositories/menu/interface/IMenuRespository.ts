@@ -1,4 +1,5 @@
 import { IFilterMenuItem, MenuItemInputDto } from "../../../dtos/menuItems/menu-req-dto";
+import { IReqVariant } from "../../../dtos/menuItems/mernuVariant-req.dto";
 import { IMenuItem } from "../../../models/menuItem";
 import { PaginatedResult } from "../../../types/pagination";
 
@@ -10,5 +11,8 @@ export default interface IMenuRepository {
     statusChangeMenuItem(id: string, status: string): Promise<IMenuItem | null>;
     deleteMenuItem(id: string): Promise<IMenuItem | null>;
     findByName(name: string, hotelId: string, excludeId?: string): Promise<IMenuItem | null>;
-    getAllUserMenuItems(filter:IFilterMenuItem,limit:number,hotelId:string,page:number):Promise<PaginatedResult<IMenuItem>>;
+    getAllUserMenuItems(filter: IFilterMenuItem, limit: number, hotelId: string, page: number): Promise<PaginatedResult<IMenuItem>>;
+    menuVariantAdd(productId: string, data: IReqVariant): Promise<IMenuItem | null>;
+    menuVariantEdit( productId: string, variantId: string, data: IReqVariant): Promise<IMenuItem | null>;
+    menuVariantDelete(productId: string, variantId: string): Promise<IMenuItem | null>;
 }

@@ -2,15 +2,9 @@ import mongoose, { Schema } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
 import { HydratedDocument, Types } from "mongoose";
+import { IHotelAdmin } from "./hotelAdmin";
 
-export enum OrderItemStatus {
-    PENDING = "pending",
-    PREPARING = "preparing",
-    READY_TO_SERVE = "ready_to_serve",
-    SERVED = "served",
-    COMPLETED = "completed",
-    CANCELLED = "cancelled",
-}
+
 
 export enum OrderStatus {
     PENDING = "pending",
@@ -18,44 +12,25 @@ export enum OrderStatus {
     COMPLETED = "completed",
     CANCELLED = "cancelled",
 }
-export enum PaymentStatus{
-    UNPAID='unpaid',
-    PAID='paid'
-}
 
-export interface IOrderItem {
-    productId: Types.ObjectId;
-    price: number;
-    quantity: number;
-    total: number;
-    status: OrderItemStatus;
-    paymentId?:string;
-    paymentStatus:PaymentStatus
-}
+
+
 
 export interface IOrder {
     _id?:Types.ObjectId;
     orderId?:string;
     tableId: Types.ObjectId|string;
     userId: Types.ObjectId|string;
-    hotelId: Types.ObjectId|string;
-    items: IOrderItem[];
+    hotelId: Types.ObjectId|string|IHotelAdmin
     totalAmount: number;
     prepaidAmount: number;
     payAmount: number;
     orderStatus: OrderStatus;
+    totalItem:number;
 }
 
 
-const orderItemSchema = new Schema<IOrderItem>({
-    productId: { type: Schema.Types.ObjectId, ref: "Menu", required: true },
-    price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
-    total: { type: Number, required: true },
-    paymentId:{type:String,},
-    status: { type: String, enum: Object.values(OrderItemStatus), default: OrderItemStatus.PENDING },
-    paymentStatus:{type:String,enum:Object.values(PaymentStatus),default:PaymentStatus.UNPAID}
-}, { _id: false });
+
 
 const orderSchema = new Schema<IOrder>({
      orderId: {
@@ -70,10 +45,10 @@ const orderSchema = new Schema<IOrder>({
     tableId: { type: Schema.Types.ObjectId, ref: "Table", required: true },
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     hotelId: { type: Schema.Types.ObjectId, ref: "HotelAdmin", required: true },
-    items: { type: [orderItemSchema], required: true },
     totalAmount: { type: Number, required: true },
     prepaidAmount: { type: Number, default: 0 },
     payAmount: { type: Number, required: true },
+    totalItem:{type:Number,default:0},
     orderStatus: { type: String, enum: Object.values(OrderStatus), default: OrderStatus.PENDING },
 }, { timestamps: true });
 const Order = mongoose.model<IOrder>('Order', orderSchema)

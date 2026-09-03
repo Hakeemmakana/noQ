@@ -1,5 +1,6 @@
 import { ICart } from "../../models/cart";
 import { IMenuItem } from "../../models/menuItem";
+import { IMenuVariant } from "../../models/menuVarient";
 import { cartProductDto } from "../cart/cart.response.dto";
 
 
@@ -13,12 +14,15 @@ export function toCheckoutResDto(cartData: ICart, total: number): checkoutWithPr
         total: total,
         items: cartData.items.map((item) => {
             const product = item.itemId as IMenuItem
+            const variant=product.variants.find(x=>x._id?.toString()==item.variantId.toString()) as IMenuVariant
             return {
                 id: product._id?.toString() ?? '',
                 productName: product.itemName,
-                description: product.description,
-                productImage: product.itemImage,
-                price: product.price,
+                prdouctVariant:'vari temp youwill change when checkout',
+                description:variant.name,
+                // description: product.description,
+                productImage:variant.image|| product.itemImage,
+                price: variant.price,
                 type: product.type,
                 quantity: item.quantity
 
@@ -49,3 +53,4 @@ export type IPostCheckoutResDto =
     | { type: 'STOCK_ISSUE'; payload: IStockValidationResponse }
     | { type: 'STRIPE_PAYMENT'; payload: IOrderandPayResDto }
     | { type: 'ORDER_SUCCESS'; payload: IOrderNowRsDto };
+

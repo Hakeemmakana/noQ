@@ -1,4 +1,4 @@
-    import { Router } from "express";
+import { Router } from "express";
 import { container } from "../DI/container";
 import { ITableController } from "../controllers/table/interfaces/ITableController";
 import { TYPES } from "../DI/types";
@@ -6,32 +6,38 @@ import IUserController from "../controllers/user/interface/IUserController";
 import { verifyUser } from "../middleware/jwt";
 import IAuthController from "../controllers/auth/interface/IAuthController";
 import upload from "../middleware/multerMiddleware";
+import { INotificationController } from "../controllers/notification/interface/INotificationController";
 
-const router =Router()
+const router = Router()
 
-    router.use(verifyUser)
-    // router.route('/home').get()
-    const tableController=container.get<ITableController>(TYPES.TableController)
-    router.route('/table/:hotelId/:tableId').get(tableController.getTable)
+router.use(verifyUser)
 
-    //profile section
-    const userController=container.get<IUserController>(TYPES.UserController)
-    router.route('/profile')
-            .get(userController.getUserProfile)
-            .patch(userController.updateUserProfile)
-    router.patch('/profile/profilePhotoChange',upload.single('image'),userController.updateUserProfilePicture)
-    //atuth
-    const authController=container.get<IAuthController>(TYPES.AuthController)
-    router.post('/profile/requestOtp',authController.forgotPassword)
-    router.post('/profile/verifyOtp',authController.verifyOtp)
-    router.post('/profile/resentOtp',authController.resendOtp)
-    router.post('/profile/resetPassword',authController.resetPassword)
+// router.route('/home').get()
+const tableController = container.get<ITableController>(TYPES.TableController)
+router.route('/table/:hotelId/:tableId').get(tableController.getTable)
 
-    //payment
+//profile section
+const userController = container.get<IUserController>(TYPES.UserController)
+router.route('/profile')
+    .get(userController.getUserProfile)
+    .patch(userController.updateUserProfile)
+router.patch('/profile/profilePhotoChange', upload.single('image'), userController.updateUserProfilePicture)
+//atuth
+const authController = container.get<IAuthController>(TYPES.AuthController)
+router.post('/profile/requestOtp', authController.forgotPassword)
+router.post('/profile/verifyOtp', authController.verifyOtp)
+router.post('/profile/resentOtp', authController.resendOtp)
+router.post('/profile/resetPassword', authController.resetPassword)
+
+//notification
+const notificationController = container.get<INotificationController>(TYPES.NotificationController)
+router.get('/notification', notificationController.getUserNotification)
+router.patch('/notification/:id', notificationController.markNotificationAsRead)
+router.patch('/allNotification', notificationController.markNotificationAsAllReadUser)
 
 
-   
 
 
 
-    export default router
+
+export default router

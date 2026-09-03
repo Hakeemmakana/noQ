@@ -8,11 +8,11 @@ import type { IOrder, OrderStatus } from "../types/orderTypes";
 const statusClasses: Record<OrderStatus, string> = {
   pending:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  confirmed:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
   preparing:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  ready_to_serve:
     "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  served:
+  picked:
     "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
   completed:
     "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
@@ -42,6 +42,7 @@ const OrdersPage = () => {
 
     fetchOrders();
   }, []);
+  
 
   if (loading) {
     return (
@@ -106,9 +107,8 @@ const OrdersPage = () => {
                 </div>
 
                 <span
-                  className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
-                    statusClasses[order.orderStatus]
-                  }`}
+                  className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${statusClasses[order.orderStatus]
+                    }`}
                 >
                   {order.orderStatus}
                 </span>
@@ -125,7 +125,7 @@ const OrdersPage = () => {
                 <div className="flex justify-between gap-4">
                   <span>Items</span>
                   <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {order.items?.length || 0}
+                    {order.totalItem || 0}
                   </span>
                 </div>
 

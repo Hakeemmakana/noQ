@@ -4,6 +4,7 @@ import persistStore from "redux-persist/es/persistStore";
 import storage  from "redux-persist/lib/storage";
 import userAuthReducer from '../features/auth/authSlice/userAuthSlice'
 import adminAuthReducer from '../features/auth/authSlice/adminAuthSlice'
+import staffAuthReducer from '../features/auth/authSlice/staffAuthSlice'
 import tableReducer from "../features/user/table/slice/tableSlice";
 const persistConfig={
     key:'root',
@@ -12,6 +13,7 @@ const persistConfig={
 const rootReducer=combineReducers({
     userAuth:userAuthReducer,
     adminAuth:adminAuthReducer,
+    staffAuth:staffAuthReducer,
     table:tableReducer
 })
 

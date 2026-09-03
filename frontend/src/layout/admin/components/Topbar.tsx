@@ -88,14 +88,15 @@ const handleClearSearch = () => {
               )}
           </div>
         ) : isSort? (
-          <div className="inline-flex w-fit rounded-full bg-[#ECECF4] p-1 dark:bg-slate-800">
-            <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1D27F3] shadow-sm dark:bg-slate-200 dark:text-slate-900">
-              Monthly
-            </button>
-            <button className="rounded-full px-5 py-2 text-sm font-semibold text-[#8C91A8] dark:text-slate-300">
-              Yearly
-            </button>
-          </div>
+          <></>
+          // <div className="inline-flex w-fit rounded-full bg-[#ECECF4] p-1 dark:bg-slate-800">
+          //   <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-[#1D27F3] shadow-sm dark:bg-slate-200 dark:text-slate-900">
+          //     Monthly
+          //   </button>
+          //   <button className="rounded-full px-5 py-2 text-sm font-semibold text-[#8C91A8] dark:text-slate-300">
+          //     Yearly
+          //   </button>
+          // </div>
         ):(
           <></>
         )

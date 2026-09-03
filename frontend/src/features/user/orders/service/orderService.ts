@@ -22,4 +22,12 @@ export const orderService = {
       throw getErrorMessage(error);
     }
   },
+  async markOrderAsCompleted(id: string) {
+    try {
+      const res = await tenantApi.patch(`/orderCompleted/${id}`);
+      return res?.data?.data as IOrder;
+    } catch (error) {
+      throw getErrorMessage(error);
+    }
+  },
 };

@@ -9,6 +9,8 @@ import AdminProfilePage from '../features/admin/profile/pages/AdminProfilePage'
 import ProductListPage from '../features/admin/products/pages/ProductListPage'
 import AdminOrdersPage from '../features/admin/orders/pages/AdminOrdersPage'
 import AdminOrderDetailsPage from '../features/admin/orders/pages/AdminOrderDetailsPage'
+import MenuVariantsPage from '../features/admin/variant/page/MenuVariantsPage'
+import DashboardPage from '../features/admin/dashboard/pages/DashboardPage'
 
 
 export default function AdminRouter() {
@@ -17,14 +19,14 @@ export default function AdminRouter() {
       <Route path='/' element={<AppLayout />}>
         <Route
           index
-          element={<UserManagementPage />} 
+          element={<DashboardPage />} 
         />
 
-        {/* <Route
+        <Route
           path='/dashboard'
           element={<DashboardPage />}
           
-        /> */}
+        />
         <Route
           path='/users'
           element={<UserManagementPage />}
@@ -63,6 +65,11 @@ export default function AdminRouter() {
           <Route
             path='/order/:id'
             element={<AdminOrderDetailsPage/>}
+            
+          />
+          <Route
+            path='/productVarient/:id'
+            element={<MenuVariantsPage/>}
             
           />
 

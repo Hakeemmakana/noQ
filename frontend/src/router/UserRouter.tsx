@@ -9,6 +9,8 @@ import { PaymentPage } from '../features/user/checkout/service/stripeService'
 import OrdersPage from '../features/user/orders/pages/OrdersPage'
 import OrderDetailsPage from '../features/user/orders/pages/OrderDetailsPage'
 import OrderSuccessPage from '../features/user/orders/pages/OrderSuccessPage'
+import ProductDetailsPage from '../features/user/menu-details/pages/ProductDetailsPage'
+import PaymentSuccess from '../features/user/orders/pages/PaymentSuccess'
 
 
 const UserRouter = () => {
@@ -22,12 +24,15 @@ const UserRouter = () => {
         <Route path='/tables/:hotelId/:tableId' element={<RestaurantOrderingLanding />} />
         <Route path='/profile' element={<ProfilePage />} />
         <Route path='/menu' element={<MenuListPage />} />
+        <Route path='/menuDetails/:id/' element={<ProductDetailsPage />} />
+        <Route path='/menuDetails/:id/:variantIndex' element={<ProductDetailsPage />} />
         <Route path='/cart' element={<CartPage />} />
         <Route path='/checkout' element={<CheckoutPage />} />
         <Route path='/checkout/payment' element={<PaymentPage />} />
         <Route path='/orders' element={<OrdersPage />} />
         <Route path='/order/:id' element={<OrderDetailsPage  />} />
         <Route path='/orderSuccess' element={<OrderSuccessPage  />} />
+        <Route path='/paymentSuccess' element={<PaymentSuccess  />} />
       </Route>
     </Routes>
   )

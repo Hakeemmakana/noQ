@@ -7,7 +7,11 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export const PaymentPage = () => {
   const location = useLocation();
-  const { clientSecret } = location.state || {};
+  const { clientSecret,redirectUrl } = location.state || {};
+
+  const messageType = redirectUrl
+    ? "paymentSuccess"
+    : "orderSuccess";
 
   if (!clientSecret) return <div>Invalid Access</div>;
 
@@ -19,7 +23,7 @@ export const PaymentPage = () => {
         stripe={stripePromise}
         options={{ clientSecret }}
       >
-        <CheckoutForm onClose={() => window.history.back()} />
+        <CheckoutForm messageType={messageType} onClose={() => window.history.back()} />
       </Elements>
     </div>
   );

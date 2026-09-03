@@ -26,7 +26,7 @@ export interface IOrder {
   tableId: ITable;
   userId: string;
   hotelId: IHotel;
-  items: IOrderItem[];
+  orderItems: IOrderItem[];
   totalAmount: number;
   prepaidAmount: number;
   payAmount: number;

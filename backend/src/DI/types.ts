@@ -58,8 +58,25 @@ export const TYPES = {
     // order
     OrderRepository:Symbol.for('OrderRepository'),
     OrderService:Symbol.for('OrderService'),
-    OrderController:Symbol.for('OrderController')
+    OrderController:Symbol.for('OrderController'),
 
+    //orderItem
+    OrderItemRepository:Symbol.for('OrderItemRepository'),
+
+    //staffAuth
+    StaffAuthController:Symbol.for('StaffAuthController'),
+    StaffAuthService:Symbol.for('StaffAuthService'),
+    StaffAuthRepository:Symbol.for('StaffAuthRepository'),
+    //socket
+    SocketService:Symbol.for('SocketService'),
+    //notification
+    NotificationRepository:Symbol.for('NotificationRepository'),
+    NotificationService:Symbol.for('NotificationService'),
+    NotificationController:Symbol.for('NotificationController'),
+
+    //dashboard and revenue report
+    ReportService:Symbol.for('ReportService'),
+    ReportController:Symbol.for('ReportController'),
 
 
 }

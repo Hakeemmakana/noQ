@@ -2,15 +2,18 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { orderService } from "../service/orderService";
 import type { IOrder, IOrderItem, OrderStatus } from "../types/orderTypes";
+import { getSocket } from "../../../../socket.ts/socket";
+import { checkoutService } from "../service/checkoutService";
+import { errorToast, successToast } from "../../../../shared/utils/toastNotification";
 
 const itemStatusStyles: Record<OrderStatus, string> = {
   pending:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  confirmed:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
   preparing:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  ready_to_serve:
     "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  served:
+  picked:
     "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
   completed:
     "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
@@ -21,11 +24,11 @@ const itemStatusStyles: Record<OrderStatus, string> = {
 const orderStatusStyles: Record<OrderStatus, string> = {
   pending:
     "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300",
-  confirmed:
-    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
   preparing:
+    "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+  ready_to_serve:
     "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300",
-  served:
+  picked:
     "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
   completed:
     "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
@@ -43,6 +46,10 @@ const OrderDetailsPage = () => {
   const [order, setOrder] = useState<IOrder | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [fetch,setFetch]=useState(false)
+
+
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -65,11 +72,64 @@ const OrderDetailsPage = () => {
     };
 
     fetchOrderDetails();
-  }, [id]);
+
+
+  }, [id,fetch]);
+  useEffect(() => {
+    if (!order || !order.hotelId) return;
+    const socket = getSocket();
+
+    socket.emit("joinHotelRoom", { hotelId: order.hotelId._id.toString() })
+    const eventName = `updateOrderCardUser${id}`
+
+    socket.on(eventName, (res) => {
+      setOrder((prevOrder) => {
+        if (!prevOrder) return null
+        const updatedOrder = prevOrder.orderItems.map((item) => {
+          if (item._id == res.data._id) {
+            return {
+              ...item,
+              status: res.data.status
+            }
+          }
+          return item
+        })
+        return {
+          ...prevOrder,
+          orderItems: updatedOrder
+        }
+      })
+    });
+    return () => {
+      socket.off(eventName);
+    };
+  }, [id, order?.hotelId._id])
 
   const renderItemTotal = (item: IOrderItem) => {
     return item.total ?? item.price * item.quantity;
   };
+  const payReminingAmount=async()=>{
+    const res=await checkoutService.payRemainingAmount()
+    if (res?.message === "success") {
+      
+      const { clientSecret, paymentIntentId } = res.data;
+        navigate("/checkout/payment", {
+          state: { clientSecret, paymentIntentId, redirectUrl:`order/${id}`}
+        });
+        return;
+      }
+  }
+  const handleOrderComplete=async()=>{
+    if(!id)return
+    try {
+      await orderService.markOrderAsCompleted(id)
+      setFetch(!fetch)
+      successToast('order completed ')
+    } catch (error) {
+      errorToast(error as string)
+    }
+
+  }
 
   if (loading) {
     return (
@@ -130,21 +190,82 @@ const OrderDetailsPage = () => {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900 lg:col-span-2">
           <div className="mb-6 flex flex-col gap-4 border-b border-gray-200 pb-5 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Order Details</h1>
-              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                Complete information about this order
-              </p>
-            </div>
+  <div>
+    <h1 className="text-2xl font-bold">Order Details</h1>
+    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      Complete information about this order
+    </p>
+  </div>
 
-            <span
-              className={`w-fit rounded-full px-3 py-1 text-xs font-semibold capitalize ${
-                orderStatusStyles[order.orderStatus]
-              }`}
-            >
-              {order.orderStatus}
-            </span>
-          </div>
+  <div className="flex flex-wrap items-center gap-3">
+    {order.payAmount > 0 ? (
+      <button
+        type="button"
+        onClick={() => setShowPaymentModal(true)}
+        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+      >
+        Pay Remaining Amount
+      </button>
+    ):order.orderStatus=="pending"&&(
+      <button
+        type="button"
+        onClick={handleOrderComplete}
+        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+      >
+        mark as compleated
+      </button>
+      // <button>mark as compleated</button>
+    )}
+
+    <span
+      className={`w-fit rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+        orderStatusStyles[order.orderStatus]
+      }`}
+    >
+      {order.orderStatus}
+    </span>
+  </div>
+
+  {showPaymentModal && (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Pay Remaining Amount
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-600">
+          Please pay the remaining amount for this order.
+        </p>
+
+        <div className="mt-5 rounded-lg bg-gray-100 p-4 text-center">
+          <p className="text-sm text-gray-500">Remaining Amount</p>
+          <p className="mt-1 text-2xl font-bold text-gray-900">
+            ₹{order.payAmount}
+          </p>
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => setShowPaymentModal(false)}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            onClick={payReminingAmount}
+            className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+          >
+            Proceed to Pay
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
@@ -190,13 +311,14 @@ const OrderDetailsPage = () => {
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Ordered Items</h2>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {order.items?.length || 0} items
+                {order.totalItem || 0} items
               </span>
             </div>
 
             <div className="space-y-4">
-              {order.items?.length ? (
-                order.items.map((item, index) => (
+              {order.orderItems?.length ? (
+                order.orderItems.map((item, index) => (
+
                   <div
                     key={item._id || index}
                     className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950/40"
@@ -217,7 +339,7 @@ const OrderDetailsPage = () => {
                         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div>
                             <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                              {item?.productId?.itemName}
+                              {item?.productName}
                             </h3>
                             {/* <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                               Item ID: {item._id || "N/A"}
@@ -225,9 +347,8 @@ const OrderDetailsPage = () => {
                           </div>
 
                           <span
-                            className={`w-fit rounded-full px-3 py-1 text-xs font-medium capitalize ${
-                              itemStatusStyles[item.status || order.orderStatus]
-                            }`}
+                            className={`w-fit rounded-full px-3 py-1 text-xs font-medium capitalize ${itemStatusStyles[item.status || order.orderStatus]
+                              }`}
                           >
                             {item.status || order.orderStatus}
                           </span>
@@ -250,7 +371,7 @@ const OrderDetailsPage = () => {
 
                           <div className="rounded-xl bg-white p-3 dark:bg-gray-900">
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Total 
+                              Total
                             </p>
                             <p className="mt-1 font-semibold">
                               ₹{renderItemTotal(item)}
@@ -309,7 +430,7 @@ const OrderDetailsPage = () => {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Items count</span>
-                <span className="font-medium">{order.items?.length || 0}</span>
+                <span className="font-medium">{order.totalItem || 0}</span>
               </div>
 
               <div className="flex justify-between">

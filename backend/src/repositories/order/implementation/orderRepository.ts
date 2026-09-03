@@ -23,9 +23,10 @@ export default class OrderRepository extends BaseRepository<IOrder> implements I
         return await this.updateById(id,data)
     }
     async createOrder(data:IOrder):Promise<IOrder>{
+        const hId=typeof data.hotelId=='object'?data.hotelId._id:data.hotelId
         const newOrder={
             ...data,
-            hotelId: new Types.ObjectId(data.hotelId),
+            hotelId: new Types.ObjectId(hId),
             userId: new Types.ObjectId(data.userId),
             tableId: new Types.ObjectId(data.tableId),
         }
@@ -51,6 +52,21 @@ export default class OrderRepository extends BaseRepository<IOrder> implements I
       
     }
     async getOneOrder(orderId:string):Promise<IOrder|null>{
-        return await  this.getOneWithPopulate({_id:orderId}).populate(['hotelId','tableId','items.productId'])
+        return await  this.getOneWithPopulate({_id:orderId}).populate(['hotelId','tableId'])
     }
+    async findActiveOrderWithoutTable(userId:string,hotelId:string):Promise<IOrder|null>{
+        const filter: QueryFilter<IOrder> = {
+            userId: new Types.ObjectId(userId),
+            hotelId: new Types.ObjectId(hotelId),
+            orderStatus: { 
+                $in: [OrderStatus.PENDING,] 
+            }
+        };
+        return await this.getByFilter(filter)
+    }
+    markOrderAsCompleted=async(orderId: string): Promise<IOrder|null> =>{
+        const updateData={orderStatus:OrderStatus.COMPLETED}
+        return await this.updateById(orderId,updateData)
+    }
+    
 }

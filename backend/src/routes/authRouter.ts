@@ -3,6 +3,7 @@ import {container} from '../DI/container'
 import {TYPES} from '../DI/types'
 import IAuthController from "../controllers/auth/interface/IAuthController";
 import IAdminAuthController from "../controllers/adminAuth/interface/IAdminAuthController";
+import IStaffAuthController from "../controllers/staffAuth/interface/IStaffAuthController";
 const router=Router()
 
 const authController =container.get<IAuthController>(TYPES.AuthController)
@@ -23,5 +24,11 @@ const adminAuthController=container.get<IAdminAuthController>(TYPES.AdminAuthCon
 router.route('/adminLogin').post(adminAuthController.login)
 router.route('/adminLogout').post(adminAuthController.logout)
 router.route('/admin-refresh-token').post(adminAuthController.adminRefreshToken)
+
+const staffAuthController=container.get<IStaffAuthController>(TYPES.StaffAuthController)
+//staff auth routes
+ router.route('/staffLogin').post(staffAuthController.login)
+ router.route('/staffLogout').post(staffAuthController.logout)
+ router.route('/staff-refresh-token').post(staffAuthController.staffRefreshToken)
 
 export default router

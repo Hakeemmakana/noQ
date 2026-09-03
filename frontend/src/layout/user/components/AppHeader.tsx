@@ -10,6 +10,7 @@ import {
   UserCircle2,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import NotificationDropdown, { type AppNotification } from "./NotificationDropdown";
 
 type User = {
   name: string;
@@ -28,6 +29,9 @@ type AppHeaderProps = {
   onToggleCart: () => void;
   onLogout: () => void;
   onProfileClick: () => void;
+  notifications:AppNotification[]
+   onMarkAsRead:(id:string)=>void;
+  onMarkAllAsRead:()=>void;
 };
 
 export default function AppHeader({
@@ -41,6 +45,9 @@ export default function AppHeader({
   // onToggleCart,
   onLogout,
   onProfileClick,
+  notifications,
+   onMarkAsRead,
+  onMarkAllAsRead
 }: AppHeaderProps) {
   const navigate = useNavigate()
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -137,6 +144,8 @@ export default function AppHeader({
                 <Moon className="h-5 w-5" />
               )}
             </button>
+            <NotificationDropdown notifications={notifications}
+           onMarkAsRead={onMarkAsRead} onMarkAllAsRead={onMarkAllAsRead} />
 
             <div className="relative z-50" ref={dropdownRef}>
               <button

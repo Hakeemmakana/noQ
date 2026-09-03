@@ -1,7 +1,7 @@
 import { useStripe, useElements, PaymentElement } from "@stripe/react-stripe-js";
 import { useState } from "react";
 
-export const CheckoutForm = ({ onClose }: { onClose: () => void }) => {
+export const CheckoutForm = ({ messageType,onClose }: { messageType:string,onClose: () => void }) => {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -15,7 +15,7 @@ export const CheckoutForm = ({ onClose }: { onClose: () => void }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: window.location.origin + "/orderSuccess",
+        return_url: window.location.origin + `/${messageType}`,
       },
     });
 

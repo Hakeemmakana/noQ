@@ -1,7 +1,9 @@
 import mongoose, {HydratedDocument, Schema, Types} from "mongoose";
 import { IMenuItem } from "./menuItem";
-type cartItems={
+import { IMenuVariant } from "./menuVarient";
+export type cartItems={
     itemId:Types.ObjectId|IMenuItem;
+    variantId:Types.ObjectId|IMenuVariant;
     quantity:number
 }
 export interface ICart{
@@ -15,6 +17,7 @@ const cartSchema =new Schema<ICart>({
     hotelId:{type:Schema.Types.ObjectId,required:true},
     items:[{
         itemId:{type:Schema.Types.ObjectId,required:true,ref:'Menu'},
+        variantId:{type:Schema.Types.ObjectId,required:true},
         quantity:{type:Number,required:true,min:1,default:1}
         
     }]

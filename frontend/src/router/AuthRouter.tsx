@@ -9,6 +9,8 @@ import UserAuthRoute from '../guards/UserAuthRoute'
 import AdminAuthRoute from '../guards/AdminAuthRoute'
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import UserManagementPage from '../features/admin/users/page/UserManagementPage'
+import StaffLoginPage from '../features/auth/pages/StaffLoginPage'
+import StaffAuthRoute from '../guards/StaffAuthRoute'
 
 const AuthRouter = () => {
 
@@ -28,6 +30,7 @@ const AuthRouter = () => {
       <Route path='/reset-password' element={<UserAuthRoute><ResetPassword /></UserAuthRoute>} />
 
       <Route path='/adminLogin' element={<AdminAuthRoute><AdminLogin /></AdminAuthRoute>} />
+      <Route path='/staffLogin' element={<StaffAuthRoute><StaffLoginPage /></StaffAuthRoute>} />
 
     </Routes>
   )

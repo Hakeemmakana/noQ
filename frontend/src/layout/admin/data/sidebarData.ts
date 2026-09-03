@@ -6,7 +6,7 @@ import {
   ClipboardList,
   Users,
   User,
-  BarChart3,
+  // BarChart3,
 } from "lucide-react";
 
 import type  { NavItem } from '../types/navigation'
@@ -20,5 +20,5 @@ export const sidebarItems: NavItem[] = [
   { id: 6, label: "Staff", path: "/admin/staff", icon: Users },
   { id: 7, label: "Profile", path: "/admin/profile", icon: User },
   { id: 8, label: "users", path: "/admin/users", icon: Users },
-  { id: 9, label: "Revenue Report", path: "/admin/revenue-report", icon: BarChart3 },
+  // { id: 9, label: "Revenue Report", path: "/admin/revenue-report", icon: BarChart3 },
 ];

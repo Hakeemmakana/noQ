@@ -15,7 +15,7 @@
     "@stripe/react-stripe-js": "^6.6.0",
     "@stripe/stripe-js": "^9.8.0",
     "@tailwindcss/vite": "^4.2.0",
-    "axios": "^1.15.2",
+    "axios": "^1.18.1",
     "html5-qrcode": "^2.3.8",
     "lucide-react": "^1.14.0",
     "qrcode": "^1.5.4",
@@ -24,7 +24,8 @@
     "react-hot-toast": "^2.6.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.13.0",
-    "redux-persist": "^6.0.0"
+    "redux-persist": "^6.0.0",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

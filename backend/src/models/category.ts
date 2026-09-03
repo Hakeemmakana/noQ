@@ -7,6 +7,8 @@ export interface ICategory{
     isDeleted:boolean;
     isAvailable:boolean;
     hotelId:mongoose.Types.ObjectId;
+    createdAt:string;
+    updatedAt:string;
 }
 
 
@@ -16,7 +18,7 @@ const categorySchema=new Schema<ICategory>({
     isAvailable:{type:Boolean,default:true},
     isDeleted:{type:Boolean,default:false},
     hotelId:{type:Schema.Types.ObjectId,required:true}
-})
+},{timestamps:true})
 
 const Category=mongoose.model<ICategory>('Category',categorySchema);
 export default Category;

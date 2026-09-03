@@ -53,12 +53,13 @@ export default function ProductCategoryPage() {
     };
 
     useEffect(() => {
-        setPage(1);
-        fetchCategories(searchVal, 1);
+        // setPage(1);
+        fetchCategories(searchVal, page);
     }, [searchVal]);
 
     const handlePageChange = async (nextPage: number) => {
         setPage(nextPage);
+        
         await fetchCategories(searchVal, nextPage);
     };
 

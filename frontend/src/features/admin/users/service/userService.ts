@@ -1,11 +1,11 @@
 import adminApi from "../../../../services/adminApi"
 import { ADMIN_ROUTE } from "../../../../shared/constants/apiRoutes";
 import getErrorMessage from "../../../../utils/getErrorMessage";
-
+const users='users'
 
 export const getUsers = async (search: string, page: number) => {
     try {
-        const res = await adminApi.get(`/${ADMIN_ROUTE}/users`, {
+        const res = await adminApi.get(`/${ADMIN_ROUTE}/${users}`, {
             params: {
                 search,
                 page
@@ -19,7 +19,7 @@ export const getUsers = async (search: string, page: number) => {
 }
 export const statusChange = async (id: string, status: 'active' | 'blocked') => {
     try {
-        const res = await adminApi.patch(`/${ADMIN_ROUTE}/users/${id}/status`, {
+        const res = await adminApi.patch(`/${ADMIN_ROUTE}/${users}/${id}/status`, {
             status
         })
         return res.data
@@ -30,7 +30,7 @@ export const statusChange = async (id: string, status: 'active' | 'blocked') => 
 }
 export const deleteUser = async (id: string) => {
     try {
-        const res = await adminApi.patch(`/${ADMIN_ROUTE}/users/${id}/soft-delete`)
+        const res = await adminApi.patch(`/${ADMIN_ROUTE}/${users}/${id}/soft-delete`)
         return res.data
 
     } catch (error) {

@@ -9,7 +9,7 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
     constructor() {
         super(Cart)
     }
-    async getCart( userId: string,hotelId: string): Promise<ICart | null> {
+    async getCart( userId: string,hotelId: string): Promise<ICart|null> {
         const hotelObjectId = new Types.ObjectId(hotelId);
         const userObjectId = new Types.ObjectId(userId);
         const filter: QueryFilter<ICart> = {
@@ -28,22 +28,26 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
         }
         return await this.hardDeleteByFilter(filter)
     }
-    async createCart( userId: string,hotelId: string, itemId:Types.ObjectId): Promise<ICart | null> {
+    async createCart( userId: string,hotelId: string, itemId:string,variantId:string): Promise<ICart | null> {
         const cartData: CreateCartData = {
             userId: new Types.ObjectId(userId),
             hotelId: new Types.ObjectId(hotelId),
-            items:[{itemId:itemId,quantity:1}]
+            items:[{
+                itemId:new Types.ObjectId(itemId),
+                variantId:new Types.ObjectId(variantId),
+                quantity:1
+            }]
         };
         return await this.create(cartData)
     }
-    async incrementItemQuantity( userId: string,hotelId: string, itemId: string): Promise<ICart | null> {
+    async incrementItemQuantity( userId: string,hotelId: string, itemId: string,variantId:string): Promise<ICart | null> {
         const hotelObjectId = new Types.ObjectId(hotelId);
         const userObjectId = new Types.ObjectId(userId);
-        const itemObjectId = new Types.ObjectId(itemId);
+        const variantObjectId = new Types.ObjectId(variantId);
         const filter: QueryFilter<ICart> = {
             hotelId: hotelObjectId,
             userId: userObjectId,
-            'items.itemId': itemObjectId
+            'items.variantId': variantObjectId
         }
         const update = {
             $inc: {
@@ -59,7 +63,7 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
         const filter: QueryFilter<ICart> = {
             hotelId: hotelObjectId,
             userId: userObjectId,
-            'items.itemId': itemObjectId
+            'items.variantId': itemObjectId
         }
         const update = {
             $inc: {
@@ -68,7 +72,7 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
         };
         return await this.updateOneByFilter(filter, update)
     }
-    async addItemToCart( userId: string,hotelId: string, itemId: string): Promise<ICart | null> {
+    async addItemToCart( userId: string,hotelId: string, itemId: string,variantId:string): Promise<ICart | null> {
         const hotelObjectId = new Types.ObjectId(hotelId);
         const userObjectId = new Types.ObjectId(userId);
         const filter: QueryFilter<ICart> = {
@@ -79,6 +83,7 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
             $push: {
                 items: {
                     itemId: new Types.ObjectId(itemId),
+                    variantId:new Types.ObjectId(variantId),
                     quantity: 1,
                 },
             },
@@ -95,7 +100,7 @@ export default class CartRepository extends BaseRepository<ICart> implements ICa
         const cartPullQuery = {
             $pull: {
                 items: {
-                    itemId: new Types.ObjectId(itemId),
+                    variantId: new Types.ObjectId(itemId),
                 },
             },
         }

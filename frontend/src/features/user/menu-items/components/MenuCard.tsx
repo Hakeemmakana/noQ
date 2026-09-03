@@ -1,53 +1,48 @@
-// src/modules/menu/components/MenuCard.tsx
-import { useState } from "react";
-import CartQuantityControl from "./CartQuantityControl";
-import type { IMenuProduct } from "../types/menuTypes";
-import { cartService } from "../service/cartService";
-import { errorToast, successToast } from "../../../../shared/utils/toastNotification";
 
+import type { IMenuProduct } from "../types/menuTypes";
 type Props = {
   item: IMenuProduct;
 };
 
 export default function MenuCard({ item }: Props) {
-  const [cartCount, setCartCount] = useState(item.cartCount || 0);
-  const [loading, setLoading] = useState(false);
+  // const [cartCount, setCartCount] = useState(item.cartCount || 0);
+  // // const [loading, setLoading] = useState(false);
 
-  const handleIncrease = async () => {
-    try {
-      setLoading(true);
+  // // const handleIncrease = async () => {
+  //   try {
+  //     setLoading(true);
 
       
-        await cartService.addToCart(item.id);
-        setCartCount((prev) => prev + 1);
+  //       await cartService.addToCart(item.id);
+  //       setCartCount((prev) => prev + 1);
       
-      successToast("Cart updated");
-    } catch (error) {
-      errorToast(String(error));
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     successToast("Cart updated");
+  //   } catch (error) {
+  //     errorToast(String(error));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  const handleDecrease = async () => {
-    try {
-      setLoading(true);
+  // const handleDecrease = async () => {
+  //   try {
+  //     setLoading(true);
 
-      if (cartCount <= 1) {
-        await cartService.removeFromCart(item.id);
-        setCartCount(0);
-      } else {
-        await cartService.dicrementQuantity(item.id);
-        setCartCount((prev) => prev - 1);
-      }
+  //     if (cartCount <= 1) {
+  //       await cartService.removeFromCart(item.id);
+  //       setCartCount(0);
+  //     } else {
+  //       await cartService.dicrementQuantity(item.id);
+  //       setCartCount((prev) => prev - 1);
+  //     }
 
-      successToast("Cart updated");
-    } catch (error) {
-      errorToast(String(error));
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     successToast("Cart updated");
+  //   } catch (error) {
+  //     errorToast(String(error));
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900">
@@ -70,9 +65,9 @@ export default function MenuCard({ item }: Props) {
             </p>
           </div>
 
-          <span className="shrink-0 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+          {/* <span className="shrink-0 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
             ₹{item.price}
-          </span>
+          </span> */}
         </div>
 
         <p className="line-clamp-2 text-sm text-zinc-600 dark:text-zinc-300">
@@ -95,12 +90,12 @@ export default function MenuCard({ item }: Props) {
           </span>
         </div>
 
-        <CartQuantityControl
+        {/* <CartQuantityControl
           value={cartCount}
           loading={loading}
           onIncrease={handleIncrease}
           onDecrease={handleDecrease}
-        />
+        /> */}
       </div>
     </div>
   );

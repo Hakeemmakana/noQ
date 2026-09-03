@@ -26,6 +26,7 @@ export interface MenuFilters {
   category: string;
   type: ItemType;
   price: string;
+  page:string;  
 }
 
 export interface MenuListApiResponse {

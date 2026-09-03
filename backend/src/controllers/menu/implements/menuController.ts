@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction,  Response } from "express";
 import HttpStatus from "../../../constants/httpStatusCode";
 import {
     INVALID_STATUS,
@@ -9,7 +9,12 @@ import {
     MENU_ITEM_NOT_FOUND,
     MENU_ITEM_STATUS_CHANGE_SUCCESS,
     MENU_ITEM_UPDATE_SUCCESS,
-    VALIDATION_FAILED
+    VALIDATION_FAILED,
+    VARIANT_CREATE_SUCCESS,
+    VARIANT_DELETE_SUCCESS,
+    VARIANT_FETCH_SUCCESS,
+    VARIANT_NOT_FOUND,
+    VARIANT_UPDATE_SUCCESS
 } from "../../../constants/messages";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../DI/types";
@@ -21,6 +26,7 @@ import { validateMenuItemForm } from "../../../validation/menuValidation";
 import IMenuItemService from "../../../services/menu/interface/IMenuService";
 import { IFilterMenuItem, IGetMenuItemDto } from "../../../dtos/menuItems/menu-req-dto";
 import { apiResponse } from "../../../utils/apiResponse";
+import { validateMenuVariantForm } from "../../../validation/menuVariantValidation";
 
 @injectable()
 export default class MenuItemController implements IMenuItemController {
@@ -59,19 +65,19 @@ export default class MenuItemController implements IMenuItemController {
     statusChangeMenuItem = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
         try {
             const id = req.params.id as string;
-            const status = req.body.status; 
+            const status = req.body.status;
             const hotelId = req.admin?.id as string;
 
             if (!id) {
-                throw new AppError( MENU_ITEM_ID_REQUIRED, HttpStatus.BAD_REQUEST);
+                throw new AppError(MENU_ITEM_ID_REQUIRED, HttpStatus.BAD_REQUEST);
             }
             if (status !== "available" && status !== "out_of_stock") {
-                throw new AppError( INVALID_STATUS, HttpStatus.BAD_REQUEST);
+                throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST);
             }
             const result = await this._MenuItemService.statusChangeMenuItem(id, hotelId, status);
 
             if (!result) {
-                throw new AppError( MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
+                throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
             apiResponse(res, HttpStatus.OK, MENU_ITEM_STATUS_CHANGE_SUCCESS)
             return;
@@ -93,9 +99,9 @@ export default class MenuItemController implements IMenuItemController {
             if (!['available', 'unavailable'].includes(req.body.status)) {
                 throw new AppError(INVALID_STATUS, HttpStatus.BAD_REQUEST);
             }
-            
+
             const result = await this._MenuItemService.updateMenuItem(id, hotelId, req.body, req.file);
-            
+
             if (!result) {
                 throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
@@ -115,7 +121,7 @@ export default class MenuItemController implements IMenuItemController {
                 throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
             }
             const result = await this._MenuItemService.deleteMenuItem(id, hotelId);
-            
+
             if (!result) {
                 throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
             }
@@ -132,31 +138,109 @@ export default class MenuItemController implements IMenuItemController {
 
         try {
             const data = await this._MenuItemService.getAllUserMenuItems(filter as unknown as IFilterMenuItem, hotelId!, page);
-            apiResponse(res, HttpStatus.OK, MENU_ITEM_FETCH_SUCCESS,data)
+            apiResponse(res, HttpStatus.OK, MENU_ITEM_FETCH_SUCCESS, data)
             return;
         } catch (error) {
             next(error)
         }
     }
 
-    // getMenuItem = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    //     try {
-    //         const { hotelId, menuItemId } = req.params;
-    //         if (!hotelId || !menuItemId) {
-    //             throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
-    //         }
+    getMenuItem = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const menuItemId = req.params.id as string
+            const hotelId = req.admin?.id
 
-    //         const result = await this._MenuItemService.getMenuItem(req.params as unknown as getOneMenuItem);
-    //         if (!result) {
-    //             throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
-    //         }
+            if (!hotelId || !menuItemId) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
+            }
 
-    //         res.status(HttpStatus.OK).json({
-    //             success: true,
-    //             ...result
-    //         });
-    //     } catch (error) {
-    //         next(error);
-    //     }
-    // };
+            const result = await this._MenuItemService.getMenuItem(menuItemId, hotelId);
+            if (!result) {
+                throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
+            }
+            apiResponse(res, HttpStatus.OK, VARIANT_FETCH_SUCCESS, result)
+        } catch (error) {
+            next(error);
+        }
+    };
+    menuVariantAdd = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const hotelId = req.admin?.id
+            const productId = req.params.id as string
+            const validate = validateMenuVariantForm(req.body);
+            if (!validate.isValid) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors);
+            }
+
+            const data = {
+                ...req.body,
+                nutrition: req.body.nutrition
+                    ? JSON.parse(req.body.nutrition)
+                    : undefined,
+            };
+
+            await this._MenuItemService.menuVariantAdd(hotelId!, productId, data, req.file!)
+
+            apiResponse(res, HttpStatus.OK, VARIANT_CREATE_SUCCESS)
+        } catch (error) {
+            next(error)
+        }
+    }
+    menuVariantEdit = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const hotelId = req.admin?.id
+            const validate = validateMenuVariantForm(req.body);
+            const productId = req.params.productId as string
+            const variantId = req.params.variantId as string
+            if (!validate.isValid) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST, validate.errors);
+            }
+
+            const data = {
+                ...req.body,
+                nutrition: req.body.nutrition
+                    ? JSON.parse(req.body.nutrition)
+                    : undefined,
+            };
+
+            await this._MenuItemService.menuVariantEdit(hotelId!, productId, variantId, data, req.file!)
+
+            apiResponse(res, HttpStatus.OK, VARIANT_UPDATE_SUCCESS)
+        } catch (error) {
+            next(error)
+        }
+    }
+    menuVariantDelete = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
+        try {
+            const hotelId = req.admin?.id
+            const productId = req.params.productId as string
+            const variantId = req.params.variantId as string
+            const result = await this._MenuItemService.menuVariantDelete(hotelId!, productId, variantId)
+            if (!result) {
+                throw new AppError(VARIANT_NOT_FOUND, HttpStatus.NOT_FOUND)
+            }
+
+            apiResponse(res, HttpStatus.OK, VARIANT_DELETE_SUCCESS)
+        } catch (error) {
+            next(error)
+        }
+    }
+    getMenuDetails=async(req: AuthRequest, res: Response, next: NextFunction): Promise<void>=> {
+        try {
+            const hotelId = req.hotelId
+            const menuItemId = req.params.id as string
+
+            if (!hotelId || !menuItemId) {
+                throw new AppError(VALIDATION_FAILED, HttpStatus.BAD_REQUEST);
+            }
+
+            const result = await this._MenuItemService.getMenuItem(menuItemId, hotelId);
+            if (!result) {
+                throw new AppError(MENU_ITEM_NOT_FOUND, HttpStatus.NOT_FOUND);
+            }
+            apiResponse(res, HttpStatus.OK, VARIANT_FETCH_SUCCESS, result)
+        } catch (error) {
+            next(error)
+        }
+    }
 }

@@ -1,9 +1,41 @@
 import React from "react";
+import type { DashboardChartPoint } from "../types/dashboard";
 import DashboardSectionCard from "./DashboardSectionCard";
 
-const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"];
+interface DashboardChartCardProps {
+  chartData: DashboardChartPoint[];
+  loading?: boolean;
+}
 
-const DashboardChartCard: React.FC = () => {
+const DashboardChartCard: React.FC<DashboardChartCardProps> = ({
+  chartData,
+  loading = false,
+}) => {
+  const months = chartData.map((d) => d.label);
+
+  // Simple example: map revenue/profit to SVG coordinates.
+  // Replace with proper scaling logic or a chart library in real app.
+  const maxRevenue = Math.max(1, ...chartData.map((d) => d.revenue));
+  const height = 265;
+  const width = 700;
+  const stepX = width / (chartData.length - 1 || 1);
+
+  const revenuePoints = chartData.map((d, i) => {
+    const x = i * stepX;
+    const y = height - (d.revenue / maxRevenue) * height;
+    return `${x},${y}`;
+  });
+
+  const revenuePath =
+    chartData.length > 1
+      ? `M${revenuePoints.join(" L")}`
+      : `M0,${height} L0,${height}`;
+
+  const areaPath =
+    chartData.length > 1
+      ? `${revenuePath} L${width},${height} L0,${height} Z`
+      : `M0,${height} L0,${height} L${width},${height} Z`;
+
   return (
     <DashboardSectionCard className="p-5 sm:p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
@@ -12,7 +44,7 @@ const DashboardChartCard: React.FC = () => {
             Revenue vs Profit Trends
           </h3>
           <p className="mt-1 text-sm text-[#868BA3]">
-            Comparison of performance over the last 7 months
+            Comparison of performance over the selected period
           </p>
         </div>
 
@@ -29,44 +61,48 @@ const DashboardChartCard: React.FC = () => {
       </div>
 
       <div className="mt-8 h-[240px] sm:h-[300px] lg:h-[340px]">
-        <svg
-          viewBox="0 0 700 320"
-          className="h-full w-full"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3B45FF" stopOpacity="0.18" />
-              <stop offset="100%" stopColor="#3B45FF" stopOpacity="0.02" />
-            </linearGradient>
-          </defs>
+        {loading ? (
+          <div className="flex h-full items-center justify-center text-sm text-[#6B7280]">
+            Loading chart...
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="flex h-full items-center justify-center text-sm text-[#6B7280]">
+            No data available
+          </div>
+        ) : (
+          <svg
+            viewBox={`0 0 ${width} ${height + 40}`}
+            className="h-full w-full"
+            preserveAspectRatio="none"
+          >
+            <defs>
+              <linearGradient id="revenueArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3B45FF" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#3B45FF" stopOpacity="0.02" />
+              </linearGradient>
+            </defs>
 
-          <line x1="0" y1="85" x2="700" y2="85" stroke="#F0F1F6" />
-          <line x1="0" y1="145" x2="700" y2="145" stroke="#F0F1F6" />
-          <line x1="0" y1="205" x2="700" y2="205" stroke="#F0F1F6" />
-          <line x1="0" y1="265" x2="700" y2="265" stroke="#F0F1F6" />
+            {/* Grid lines (optional, static for now) */}
+            <line x1="0" y1={height * 0.25} x2={width} y2={height * 0.25} stroke="#F0F1F6" />
+            <line x1="0" y1={height * 0.5} x2={width} y2={height * 0.5} stroke="#F0F1F6" />
+            <line x1="0" y1={height * 0.75} x2={width} y2={height * 0.75} stroke="#F0F1F6" />
 
-          <path
-            d="M0,225 C60,210 100,200 160,208 C220,216 260,208 320,170 C380,128 430,118 490,146 C550,174 610,170 700,112 L700,320 L0,320 Z"
-            fill="url(#revenueArea)"
-          />
+            {/* Area */}
+            <path d={areaPath} fill="url(#revenueArea)" />
 
-          <path
-            d="M0,245 C70,230 120,227 170,236 C235,248 270,235 330,206 C390,178 432,170 500,188 C560,202 620,198 700,172"
-            fill="none"
-            stroke="#C9CDDB"
-            strokeWidth="2"
-            strokeDasharray="4 4"
-          />
+            {/* Revenue line */}
+            <path
+              d={revenuePath}
+              fill="none"
+              stroke="#2937FF"
+              strokeWidth="4"
+              strokeLinecap="round"
+            />
 
-          <path
-            d="M0,225 C60,210 100,200 160,208 C220,216 260,208 320,170 C380,128 430,118 490,146 C550,174 610,170 700,112"
-            fill="none"
-            stroke="#2937FF"
-            strokeWidth="4"
-            strokeLinecap="round"
-          />
-        </svg>
+            {/* Profit line (example, dashed) - you can compute similarly */}
+            {/* For now, keeping your original static style as placeholder */}
+          </svg>
+        )}
       </div>
 
       <div className="mt-3 grid grid-cols-7 text-center text-xs font-semibold text-[#7E8298]">

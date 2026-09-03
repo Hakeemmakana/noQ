@@ -13,6 +13,8 @@ const router = Router({ mergeParams: true })
 const menuItemController = container.get<IMenuItemController>(TYPES.MenuItemController)
 router.use(identifyTenant)
 router.get('/menu', menuItemController.getAllMenuUserSide)
+router.get('/menu/:id', menuItemController.getMenuDetails)
+
 
 const cartController = container.get<ICartController>(TYPES.CartController)
 router.post('/addToCart', cartController.addToCart)
@@ -29,10 +31,12 @@ const checkoutController = container.get<ICheckoutController>(TYPES.CheckoutCont
 router.route('/checkout')
     .get(checkoutController.getCheckout)
     .post(checkoutController.createOrder)
+router.post('/remainingAmount',checkoutController.remainingPayment)
 // order
 const orderController = container.get<IOrderController>(TYPES.OrderController)
 router.get('/orders', orderController.getAllOrders)
 router.get('/order/:id', orderController.getOneOrder)
+router.patch('/orderCompleted/:id',orderController.markMainOrderCompleated)
 
 
 export default router

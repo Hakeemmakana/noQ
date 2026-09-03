@@ -1,6 +1,10 @@
 import { OrderStatus } from "aws-sdk/clients/outposts";
 import { Types } from "mongoose";
-import { IOrder, IOrderItem, OrderItemStatus, PaymentStatus } from "../../models/order";
+import { IOrder } from "../../models/order";
+import { IOrderItem, OrderItemStatus, PaymentStatus } from "../../models/orderItems";
+import { IMenuItem } from "../../models/menuItem";
+import { IHotelAdmin } from "../../models/hotelAdmin";
+import { IMenuVariant } from "../../models/menuVarient";
 
 export interface IPaginatedOrderData<T> {
     total: number;
@@ -10,7 +14,10 @@ export interface IPaginatedOrderData<T> {
 }
 
 interface IOrderItemDto {
-    productId: Types.ObjectId;
+    _id:string;
+    variantId:string;
+    productId: Types.ObjectId|IMenuItem;
+    productName:string;
     price: number;
     quantity: number;
     total: number;
@@ -26,16 +33,24 @@ export interface IOrderResDto {
     orderId?: string;
     tableId: Types.ObjectId | string;
     userId: Types.ObjectId | string;
-    hotelId: Types.ObjectId | string;
-    items: IOrderItemDto[];
+    hotelId: Types.ObjectId | string|Partial<IHotelAdmin>;
     totalAmount: number;
     prepaidAmount: number;
     payAmount: number;
     orderStatus: OrderStatus;
+    totalItem:number;
+    orderItems?:IOrderItemDto[]
 }
 function toDtoItems(data: IOrderItem): IOrderItemDto {
+    const product=data.productId as IMenuItem
+    const variant=product.variants.filter(x=>
+        x._id?.toString()==data.variantId.toString()) as IMenuVariant[]
+    
     return {
-        productId: data.productId,
+        _id:data?._id?.toString()??'',
+        productId:data.productId,
+        productName:`${product.itemName} ${variant[0].name}`,
+        variantId:data.variantId.toString(),
         quantity: data.quantity,
         price: data.price,
         paymentStatus: data.paymentStatus,
@@ -45,19 +60,24 @@ function toDtoItems(data: IOrderItem): IOrderItemDto {
     }
 
 }
+export function toDtoItemsArr(data:IOrderItem[]):IOrderItemDto[]{
+    return data.map(toDtoItems)
+}
 
 export function toOrderDto(orderData: IOrder): IOrderResDto {
+    const hotel=orderData.hotelId as IHotelAdmin
     return {
         _id: orderData._id,
-        hotelId: orderData.hotelId,
+        // hotelId: orderData.hotelId,
+        hotelId:{_id:hotel._id,restaurantName:hotel.restaurantName},
         orderStatus: orderData.orderStatus,
         payAmount: orderData.payAmount,
+        totalItem:orderData.totalItem,
         prepaidAmount: orderData.prepaidAmount,
         tableId: orderData.tableId,
         totalAmount: orderData.totalAmount,
         userId: orderData.userId,
         orderId: orderData.orderId,
-        items: orderData.items.map(toDtoItems)
     }
 }
 export function toOrderDtos(orderData: IOrder[]): IOrderResDto[] {

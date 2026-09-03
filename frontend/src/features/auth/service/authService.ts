@@ -8,6 +8,17 @@ interface AuthResponse {
     accessToken: string;
     message: string
 }
+interface IStaffAuthResponse {
+    staff: {
+        name: string;
+        email: string;
+        role: 'waiter' | 'chef';
+        hotelId: string;
+    };
+    accessToken: string;
+    message: string;
+
+}
 
 
 
@@ -21,7 +32,7 @@ export const loginApi = async (data: { email: string, password: string }): Promi
     }
 }
 
-export const registerUserApi = async (data: { name: string, email: string, phone: string, password: string }): Promise<{message:string}> => {
+export const registerUserApi = async (data: { name: string, email: string, phone: string, password: string }): Promise<{ message: string }> => {
     try {
         const response = await userApi.post(`/${AUTH_ROUTE}/register`, data)
         return response.data
@@ -82,3 +93,12 @@ export const adminLoginApi = async (data: { email: string, password: string }): 
         throw (getErrorMessage(error))
     }
 }
+export const staffLoginApi = async (data: { email: string; password: string }): Promise<IStaffAuthResponse> => {
+    try {
+        const response = await userApi.post<IStaffAuthResponse>(`/${AUTH_ROUTE}/staffLogin`, data);
+        return response.data;
+    } catch (error) {
+        throw getErrorMessage(error);
+    }
+};
+

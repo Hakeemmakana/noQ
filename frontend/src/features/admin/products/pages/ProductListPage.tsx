@@ -1,9 +1,10 @@
 // ProductListPage.tsx
 import { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import {  useNavigate, useOutletContext } from "react-router-dom";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import Pagination from "../../../common/CommonPagination";
 import { productService } from "../service/productService";
+import{validateProductForm as validateForm}from "../utils/product.validation"
 import type {
     ICategory,
     IProduct,
@@ -20,6 +21,7 @@ const initialForm: ProductFormValues = {
     price: "",
     type: "kitchen",
     stock: "",
+    stockMode:"SHARED",
     status: "available",
     productImage: null,
 };
@@ -41,33 +43,35 @@ export default function ProductListPage() {
     const [editData, setEditData] = useState<IProduct | null>(null);
     const [deleteData, setDeleteData] = useState<IProduct | null>(null);
     const [submitLoading, setSubmitLoading] = useState(false);
+    const navigate=useNavigate()
+    // const validateForm = () => {
+    //     const newErrors: Partial<Record<keyof ProductFormValues, string>> = {};
 
-    const validateForm = () => {
-        const newErrors: Partial<Record<keyof ProductFormValues, string>> = {};
+    //     if (!form.productName.trim()) newErrors.productName = "Product name is required";
+    //     if (!form.category) newErrors.category = "Category is required";
+    //     if (!form.description.trim()) newErrors.description = "Description is required";
+    //     if (!form.price || Number(form.price) <= 0) newErrors.price = "Valid price is required";
+    //     if (!form.status) newErrors.status = "Status is required";
+    //     if (!form.type) newErrors.type = "Type is required";
+    //     if(!form.stockMode)newErrors.stockMode='Stock mode is required'
 
-        if (!form.productName.trim()) newErrors.productName = "Product name is required";
-        if (!form.category) newErrors.category = "Category is required";
-        if (!form.description.trim()) newErrors.description = "Description is required";
-        if (!form.price || Number(form.price) <= 0) newErrors.price = "Valid price is required";
-        if (!form.status) newErrors.status = "Status is required";
-        if (!form.type) newErrors.type = "Type is required";
+    //     if (!form.stock || Number(form.stock) < 0) {
+    //         newErrors.stock = "Valid stock is required";
+    //     }
 
-        if (!form.stock || Number(form.stock) < 0) {
-            newErrors.stock = "Valid stock is required";
-        }
+    //     if (!editData && !form.productImage) {
+    //         newErrors.productImage = "Product image is required";
+    //     }
 
-        if (!editData && !form.productImage) {
-            newErrors.productImage = "Product image is required";
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
+    //     setErrors(newErrors);
+    //     return Object.keys(newErrors).length === 0;
+    // };
 
     const fetchProducts = async () => {
         try {
             setLoading(true);
             const res = await productService.getProducts(searchVal, page,);
+            
             setProducts(res?.data || []);
             setLimit(res.limit)
             setTotal(res?.total || 0);
@@ -119,6 +123,7 @@ export default function ProductListPage() {
             description: product.description,
             price: String(product.price),
             type: product.type,
+            stockMode:product.stockMode,
             stock: product.stock ? String(product.stock) : "",
             status: product.status,
             productImage: product.productImage,
@@ -127,7 +132,8 @@ export default function ProductListPage() {
     };
 
     const handleSubmit = async () => {
-        if (!validateForm()) return;
+        
+        if (!validateForm(form,Object.entries(editData||[]).length>0)) return;
 
         try {
             setSubmitLoading(true);
@@ -139,15 +145,16 @@ export default function ProductListPage() {
             formData.append("price", form.price);
             formData.append("type", form.type);
             formData.append("status", form.status);
+            formData.append("stockMode", form.stockMode);
+            
 
-            if (form.type === "quick"||form.type=='kitchen') {
+            if (form.stockMode === "SHARED" ) {
                 formData.append("stock", form.stock);
             }
 
             if (form.productImage) {
                 formData.append("productImage", form.productImage);
             }
-
             if (editData) {
                 await productService.editProduct(editData.id, formData);
                 successToast("Product updated successfully");
@@ -207,6 +214,7 @@ export default function ProductListPage() {
                                 <th className="px-4 py-3">Category</th>
                                 <th className="px-4 py-3">Status</th>
                                 <th className="px-4 py-3">Type</th>
+                                <th className="px-4 py-3">Varient</th>
                                 <th className="px-4 py-3">Action</th>
                             </tr>
                         </thead>
@@ -245,6 +253,12 @@ export default function ProductListPage() {
                                         <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300">
                                             {item.type === "quick" ? "Quick" : "Kitchen"}
                                         </td>
+                                        <td><button
+                                            onClick={()=>navigate(`/admin/productVarient/${item.id}`)}
+                                            className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+                                        >
+                                            Varient
+                                        </button></td>
                                         <td className="px-4 py-3">
                                             <div className="flex gap-2">
                                                 <button

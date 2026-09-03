@@ -9,6 +9,7 @@ export interface menuItemReqDto {
     price: number;
     type: 'kitchen' | 'quick';
     status: 'available' | 'unavailable';
+    stockMode: "SHARED" | "PER_VARIANT";
     stock?: number;
     // productImage: string
 }
@@ -18,8 +19,8 @@ export interface MenuItemInputDto{
         category: string;
         isAvailable: boolean;
         description:string;
-        price: number;
         type: 'kitchen'|'quick'
+        stockMode: "SHARED" | "PER_VARIANT";
         stock: number;
 }
 
@@ -39,9 +40,9 @@ export function covertMenuInputDto(data: menuItemReqDto):MenuItemInputDto {
         category: data.category,
         isAvailable: data.status == 'available',
         description: data.description,
-        price: data.price,
         type: data.type,
         stock: data.stock ?? 0,
+        stockMode: data.stockMode
 
     }
 }

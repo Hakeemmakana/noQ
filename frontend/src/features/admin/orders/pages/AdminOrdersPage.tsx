@@ -175,7 +175,7 @@ const AdminOrdersPage = () => {
                       </td>
 
                       <td className="whitespace-nowrap px-4 py-4 text-sm text-gray-700 dark:text-gray-300">
-                        {order.items?.length || 0}
+                        {order.orderItems?.length || 0}
                       </td>
 
                       <td className="whitespace-nowrap px-4 py-4 text-sm font-semibold text-gray-900 dark:text-gray-100">

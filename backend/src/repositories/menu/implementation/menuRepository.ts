@@ -4,6 +4,7 @@ import { BaseRepository } from "../../IBaseRepository";
 import { QueryFilter, Types } from 'mongoose'
 import IMenuRepository from "../interface/IMenuRespository";
 import { IFilterMenuItem, MenuItemInputDto } from "../../../dtos/menuItems/menu-req-dto";
+import { IReqVariant } from "../../../dtos/menuItems/mernuVariant-req.dto";
 
 type CreateMenuItemData = Partial<IMenuItem> & {
     hotelId: Types.ObjectId;
@@ -106,6 +107,34 @@ export default class MenuItemRepository extends BaseRepository<IMenuItem> implem
         result.data=await this.model.populate(result.data,{path:'category',select: '_id name'})
         return result
 
+    }
+    async menuVariantAdd(productId: string, data: IReqVariant): Promise<IMenuItem | null> {
+        return await this.model.findByIdAndUpdate(productId,{
+            $push:{
+                variants:data
+            },
+        },{new:true})
+    }
+    async menuVariantEdit(productId: string, variantId: string, data: IReqVariant): Promise<IMenuItem | null> {
+        
+        return await this.model.findOneAndUpdate(
+            {_id:productId,'variants._id':variantId},
+            {$set:
+                {'variants.$':{
+                    _id:variantId,
+                    ...data
+                }}
+            },{new:true}
+        )
+    }
+    async menuVariantDelete(productId: string, variantId: string): Promise<IMenuItem | null> {
+        return await this.model.findByIdAndUpdate(productId,{
+            $pull:{
+                variants:{
+                    _id:variantId,
+                }
+            }
+        },{new:true})
     }
 
 }

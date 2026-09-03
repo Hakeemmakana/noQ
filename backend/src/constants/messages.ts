@@ -96,6 +96,7 @@ export const MENU_ITEM_FETCH_SUCCESS = "Menu items fetched successfully";
 export const CART_NOT_FOUND = 'Cart not found';
 export const PRODUCT_STOCK_EXCEEDED = 'Product stock exceeded';
 export const CART_ITEM_NOT_FOUND='Cart item not found'
+export const CART_EMPTY='Cart Empty'
 export const PRODUCT_OUT_OF_STOCK='Product is out of stock'
 export const CART_ADD_SUCCESS='Item added to cart successfully'
 export const CART_REMOVE_SUCCESS='Item removed from cart successfully'
@@ -106,4 +107,19 @@ export const CART_FETCH_FAILED='Cart fetching failed'
 export const ORDER_FETCH_SUCCESS='Order fetched successfully'
 export const ORDER_NOT_FOUND='Order not found'
 
+//variant
+export const VARIANT_FETCH_SUCCESS='Variant fetch success'
+export const VARIANT_CREATE_SUCCESS = 'Variant created successfully'
+export const VARIANT_UPDATE_SUCCESS = 'Variant updated successfully'
+export const VARIANT_DELETE_SUCCESS = 'Variant deleted successfully'
+export const VARIANT_NOT_FOUND='Variant is not exist'
+export const VARIANT_NAME_EXIST='Variant name already exists'
 
+
+// cheff
+export const CHEF_ID_NOT_FOUND = 'Chef ID not found'
+export const HOTEL_ID_NOT_FOUND = 'Hotel ID not found'
+export const CHEF_HOTEL_MISMATCH = 'Chef and hotel do not match'
+export const ORDER_ACCEPTED='Order Accepted'
+export const ORDER_READY='Order ready'
+export const ORDER_COMPLETED='Order completed'

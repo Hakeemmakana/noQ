@@ -21,18 +21,20 @@ import { IUserMappedData, userDataMapping } from "../../../dtos/user/user-respon
 const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS || 10)
 import axios from "axios"
 import { createUserDto } from "../../../dtos/user/create-user.dto"
+import IMediaService from "../../mediaService/interface/IMediaService"
 
 @injectable()
 export class AuthService implements IAuthService {
     constructor(
         @inject(TYPES.EmailService) private _emailService: IEmailService,
-        @inject(TYPES.AuthRepository) private _authRepository: IAuthRepository
+        @inject(TYPES.AuthRepository) private _authRepository: IAuthRepository,
+        @inject(TYPES.MediaService) private _MediaService: IMediaService
 
     ) {
     }
 
-    async register(userData:createUserDto): Promise<{ message: string }> {
-        const {email,name,password,phone}=userData
+    async register(userData: createUserDto): Promise<{ message: string }> {
+        const { email, name, password, phone } = userData
         const existUser = await this._authRepository.findByEmail(email);
         if (existUser) {
             throw new AppError(USER_ALREADY_EXISTS, HttpStatus.CONFLICT,)
@@ -142,12 +144,15 @@ export class AuthService implements IAuthService {
         if (!isMatch) {
             throw new AppError(INVALID_CREDENTIALS, HttpStatus.FORBIDDEN)
         }
-        
+
 
         const role = 'user'
         const accessToken = generateAccessToken(user._id.toString(), role)
         const refreshToken = generateRefreshToken(user._id.toString(), role)
         const mappedUser = userDataMapping(user)
+        if (mappedUser.imageUrl) {
+            mappedUser.imageUrl = await this._MediaService.getSignedUrl(mappedUser.imageUrl)
+        }
         return { user: mappedUser, accessToken, refreshToken }
     }
     resetPassword = async (token: string, newPassword: string): Promise<{ message: string }> => {
@@ -186,27 +191,27 @@ export class AuthService implements IAuthService {
         return { user: mappedUser, accessToken, refreshToken }
 
     }
-    refreshToken=async(refreshToken: string):Promise<{ newAccessToken: string }>=> {
-    if (!refreshToken)
-      throw new AppError( NO_REFRESH_TOKEN_FOUND,HttpStatus.BAD_REQUEST);
+    refreshToken = async (refreshToken: string): Promise<{ newAccessToken: string }> => {
+        if (!refreshToken)
+            throw new AppError(NO_REFRESH_TOKEN_FOUND, HttpStatus.BAD_REQUEST);
 
-    const decoded = verifyRefreshToken(refreshToken);
+        const decoded = verifyRefreshToken(refreshToken);
 
-    if (!decoded) {
-      throw new AppError( INVALID_TOKEN,HttpStatus.FORBIDDEN);
+        if (!decoded) {
+            throw new AppError(INVALID_TOKEN, HttpStatus.FORBIDDEN);
+        }
+
+        const user = await this._authRepository.findById(decoded.id);
+        if (!user) {
+            throw new AppError(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        if (!user.isVerified) {
+            throw new AppError(ACCOUNT_IS_BLOCKED, HttpStatus.FORBIDDEN,);
+        }
+        const newAccessToken = generateAccessToken(decoded.id, decoded.role);
+
+        return { newAccessToken };
     }
 
-    const user = await this._authRepository.findById(decoded.id);
-    if (!user) {
-      throw new AppError( USER_NOT_FOUND,HttpStatus.NOT_FOUND);
-    }
-
-    if (!user.isVerified) {
-      throw new AppError( ACCOUNT_IS_BLOCKED,HttpStatus.FORBIDDEN,);
-    }
-    const newAccessToken = generateAccessToken(decoded.id, decoded.role);
-
-    return { newAccessToken };
-  }
-  
 }

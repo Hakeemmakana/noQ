@@ -70,6 +70,27 @@ import OrderService from '../services/order/implementation/orderService'
 import IOrderController from '../controllers/order/interface/IOrderController'
 import OrderController from '../controllers/order/implementation/orderController'
 import OrderRepository from '../repositories/order/implementation/orderRepository'
+import OrderItemRepository from '../repositories/orderItems/implementation/OrderItemRepository'
+import IOrderItemRepository from '../repositories/orderItems/interfaces/IOrderItemRepository'
+import StaffAuthController from '../controllers/staffAuth/implementation/staffAuthController'
+import StaffAuthRepository from '../repositories/staffAuth/implementation/staffAuthRepository'
+import IStaffAuthRepository from '../repositories/staffAuth/interface/IStaffAuthRepository'
+import IStaffAuthService from '../services/staffAuth/interface/IStaffAuthService'
+import StaffAuthService from '../services/staffAuth/implementation/staffAuthService'
+import IStaffAuthController from '../controllers/staffAuth/interface/IStaffAuthController'
+import ISocketService from '../services/soketService/interface/ISocketService'
+import SocketService from '../services/soketService/implementation/SocketSerice'
+import { INotificationRepository } from '../repositories/notification/interface/INotificationRepository'
+import NotificationRepository from '../repositories/notification/implementation/notificationRepository'
+import NotificationService from '../services/notificationService/implementation/NotificationService'
+import INotificationService from '../services/notificationService/interface/INotifactionService'
+import { INotificationController } from '../controllers/notification/interface/INotificationController'
+import notificationController from '../controllers/notification/implementation/notificationController'
+import IReportController from '../controllers/report/interface/IReportController'
+import reportController from '../controllers/report/implementation/reportController'
+import IReportService from '../services/report/interface/IReportService'
+import ReportService from '../services/report/implementation/reportService'
+
 
 const container=new Container()
 
@@ -94,7 +115,7 @@ container.bind<IUserController>(TYPES.UserController).to(UserController)
 container.bind<IAdminAuthRepository>(TYPES.AdminAuthRepository).to(AdminAuthRepository)
 container.bind<IAdminAuthService>(TYPES.AdminAuthService).to(AdminAuthService)
 container.bind<IAdminAuthController>(TYPES.AdminAuthController).to(AdminAuthController)
-//Table
+//category
 container.bind<ICategoryRepository>(TYPES.CategoryRepository).to(CategoryRepository)
 container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService)
 container.bind<ICategoryController>(TYPES.CategoryController).to(CategoryController)
@@ -129,4 +150,21 @@ container.bind<ICheckoutController>(TYPES.CheckoutController).to(checkoutControl
 container.bind<IOrderRepository>(TYPES.OrderRepository).to(OrderRepository)
 container.bind<IOrderService>(TYPES.OrderService).to(OrderService)
 container.bind<IOrderController>(TYPES.OrderController).to(OrderController)
+
+//orderItem
+container.bind<IOrderItemRepository>(TYPES.OrderItemRepository).to(OrderItemRepository)
+
+//staffAuth
+container.bind<IStaffAuthRepository>(TYPES.StaffAuthRepository).to(StaffAuthRepository)
+container.bind<IStaffAuthService>(TYPES.StaffAuthService).to(StaffAuthService)
+container.bind<IStaffAuthController>(TYPES.StaffAuthController).to(StaffAuthController)
+//socket
+container.bind<ISocketService>(TYPES.SocketService).to(SocketService).inSingletonScope()
+//notification
+container.bind<INotificationRepository>(TYPES.NotificationRepository).to(NotificationRepository)
+container.bind<INotificationService>(TYPES.NotificationService).to(NotificationService)
+container.bind<INotificationController>(TYPES.NotificationController).to(notificationController)
+//dashboard and report
+container.bind<IReportService>(TYPES.ReportService).to(ReportService)
+container.bind<IReportController>(TYPES.ReportController).to(reportController)
 export {container}

@@ -8,5 +8,9 @@ export interface IMenuItemController {
     updateMenuItem(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     deleteMenuItem(req: AuthRequest, res: Response, next: NextFunction): Promise<void>;
     getAllMenuUserSide(req:Request,res:Response,next:NextFunction):Promise<void>
-    // getMenuItem(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getMenuItem(req: Request, res: Response, next: NextFunction): Promise<void>;
+    menuVariantAdd(req: Request, res: Response, next: NextFunction): Promise<void>;
+    menuVariantEdit(req: Request, res: Response, next: NextFunction): Promise<void>;
+    menuVariantDelete(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getMenuDetails(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

@@ -190,13 +190,13 @@ const AdminOrderDetailsPage = () => {
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Ordered Items</h2>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                {order.items?.length || 0} items
+                {order.orderItems?.length || 0} items
               </span>
             </div>
 
             <div className="space-y-4">
-              {order.items?.length ? (
-                order.items.map((item, index) => (
+              {order.orderItems?.length ? (
+                order.orderItems.map((item, index) => (
                   <div
                     key={item._id || index}
                     className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-950/40"
@@ -309,7 +309,7 @@ const AdminOrderDetailsPage = () => {
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">Items count</span>
-                <span className="font-medium">{order.items?.length || 0}</span>
+                <span className="font-medium">{order.orderItems?.length || 0}</span>
               </div>
 
               <div className="flex justify-between">

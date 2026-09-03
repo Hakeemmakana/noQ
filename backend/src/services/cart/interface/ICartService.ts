@@ -1,4 +1,4 @@
-import { CartwithProductDto } from "../../../dtos/admin/category/category-response.dto";
+import { CartwithProductDto } from "../../../dtos/cart/cart.response.dto";
 import { ICart } from "../../../models/cart";
 
 export default interface ICartService{

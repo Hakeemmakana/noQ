@@ -2,15 +2,16 @@
 
 export type OrderStatus =
     | "pending"
-    | "confirmed"
     | "preparing"
-    | "served"
+    | "ready_to_serve"
+    | "picked"
     | "completed"
     | "cancelled";
 
 export interface IOrderItem {
     _id?: string;
     productId?: IProduct;
+    productName:string;
     name: string;
     image?: string;
     quantity: number;
@@ -26,10 +27,11 @@ export interface IOrder {
     tableId: ITable;
     userId: string;
     hotelId: IHotel;
-    items: IOrderItem[];
+    orderItems: IOrderItem[];
     totalAmount: number;
     prepaidAmount: number;
     payAmount: number;
+    totalItem: number;
     orderStatus: OrderStatus;
     createdAt?: string;
     updatedAt?: string;
@@ -40,6 +42,7 @@ interface ITable {
 
 }
 interface IHotel {
+    _id:string
     restaurantName: string
 }
 
