@@ -1,22 +1,36 @@
 // src/pages/RestaurantOrderingLanding.tsx
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowRight, Loader2, QrCode, UtensilsCrossed } from "lucide-react";
 import QrScannerSheet from "../components/QrScannerSheet";
 import TableDetectedModal from "../components/TableDetectedModal";
 import { validateQrLink } from "../service/orderingService";
 import type { Idata,  ScanState } from "../types/orderingType"
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { saveTable } from "../slice/tableSlice";
+import type { RootState } from "../../../../app/store";
 
 export default function RestaurantOrderingLanding() {
   const navigate = useNavigate();
-
+  const location=useLocation()
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scanState, setScanState] = useState<ScanState>("idle");
   const [error, setError] = useState("");
   const [detectedHotel, setDetectedHotel] = useState<Idata | null>(null);
   const { hotelId, tableId } = useParams();
+  const {returnTo}=location.state||{}
+  const savedTable=useSelector((state:RootState)=>state.table.tableId)
+  useEffect(() => {
+    
+  if (location.state?.needOpenQrModal) {
+    setScannerOpen(true);
+  }
+}, [location.state]);
+useEffect(()=>{
+  if(savedTable){
+      navigate('/menu')
+    }
+},[])
 const dispatch=useDispatch()
   useEffect(() => {
     const autoValidate = async () => {
@@ -73,7 +87,9 @@ const dispatch=useDispatch()
     // navigate(`/${detectedHotel.hotelSlug}/menu`);
    
     dispatch(saveTable({tableId:detectedHotel.tableId,tableNo:detectedHotel.tableNumber}))
-    navigate('/menu');
+    if(returnTo){
+      navigate(returnTo);
+    }
   };
 
   return (

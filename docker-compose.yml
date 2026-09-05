@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:alpine
+    ports:
+      - "6380:6379"
+    container_name: noq-redis
+    restart: always
+  backend:
+    build: ./backend
+    ports:
+     - "4001:4001"
+    env_file:
+     - ./backend/.env
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    container_name: noq-backend
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_OTP_TTL: ${VITE_OTP_TTL}
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+        VITE_GOOGLE_CLIENT_SECRET: ${VITE_GOOGLE_CLIENT_SECRET}
+        VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY}
+        VITE_USDA_API_KEY: ${VITE_USDA_API_KEY}
+    ports:
+      - "3001:80"
+    container_name: noq-frontend
+    restart: always

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { ArrowLeft, QrCode, ShieldCheck } from "lucide-react";
 import { checkoutService } from "../service/checkoutService";
 import CheckoutItemCard from "../components/CheckoutItemCard";
 import CheckoutSummary from "../components/CheckoutSummary";
@@ -54,7 +54,7 @@ const CheckoutPage = () => {
       const response = await checkoutService.getCheckout();
       setItems(response?.items || []);
     } catch (err: unknown) {
-      const message = typeof err=='string'
+      const message = typeof err == 'string'
         ? err
         : "Failed to complete payment";
       setError(message);
@@ -66,11 +66,15 @@ const CheckoutPage = () => {
   useEffect(() => {
     getCheckoutData();
   }, []);
+  // const enterTable=async()=>{
 
+
+  // }
 
 
   const handleOrderNow = async () => {
     try {
+      // if(!checkTable)
       setActionLoading(true);
       setError("");
       const orderType = "ORDER_NOW";
@@ -96,10 +100,10 @@ const CheckoutPage = () => {
         // return;
       }
 
-    } catch (err:unknown) {
-      const message=typeof err=='string'
-      ?err
-      :'Failed to place order'
+    } catch (err: unknown) {
+      const message = typeof err == 'string'
+        ? err
+        : 'Failed to place order'
       setError(message);
     } finally {
       setActionLoading(false);
@@ -225,6 +229,28 @@ const CheckoutPage = () => {
                 {error}
               </div>
             ) : null}
+            {!tableId && (
+              // <button>scan Qr Code</button>
+              <button
+                type="button"
+                onClick={() =>
+                  navigate("/home", {
+                    state: {
+                      returnTo: location.pathname,
+                      needOpenQrModal:true
+                    },
+                  })
+                }
+                className="inline-flex items-center gap-2 rounded-xl bg-gray-400 px-5 py-3
+               text-sm font-semibold text-white shadow-md
+               transition-all duration-200
+               hover:bg-gray-700 hover:shadow-lg
+               active:scale-95"
+              >
+                <QrCode size={20} />
+                Table not detected. Scan QR to continue.
+              </button>
+            )}
 
             <div className="grid gap-8 lg:grid-cols-[1.2fr_420px]">
               <section className="min-w-0">

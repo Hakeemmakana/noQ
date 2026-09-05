@@ -64,7 +64,7 @@ export default function TableDetectedModal({
               disabled={loading}
               className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:opacity-60"
             >
-              Go to menu
+              Proceed
               <ArrowRight className="h-4 w-4" />
             </button>
           </div>
