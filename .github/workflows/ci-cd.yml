@@ -1,0 +1,47 @@
+name: CI/CD Pipeline for NoQ 
+
+on:
+  push:
+    branches: [ main,feature/cicd]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Define all environment variables for the NoQ project here
+    env:
+      VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+      VITE_OTP_TTL: ${{ secrets.VITE_OTP_TTL }}
+      VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+      VITE_GOOGLE_CLIENT_SECRET: ${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}
+      VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.VITE_STRIPE_PUBLISHABLE_KEY }}
+      VITE_USDA_API_KEY: ${{ secrets.VITE_USDA_API_KEY }}
+
+    steps:
+      # Step 1: Checkout the NoQ project code from GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js version 20
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Step 3: Install backend dependencies
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm install
+
+      # Step 4: Install frontend dependencies and test the build
+      - name: Install Frontend Dependencies & Build
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # Step 5: Test if the entire NoQ application builds successfully via Docker Compose
+      - name: Test Docker Compose Build
+        run: |
+          docker compose build
