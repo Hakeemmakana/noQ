@@ -1,22 +1,47 @@
-export type DashboardStatBadgeVariant = "green" | "blue" | "orange";
+// types/dashboard.ts
+import type { LucideIcon } from "lucide-react";
+export type DashboardRangeType =
+  | "today"
+  | "yesterday"
+  | "this_week"
+  | "this_month"
+  | "custom";
+
+export interface DashboardFilters {
+  type: DashboardRangeType;
+  startDate?: string;
+  endDate?: string;
+}
 
 export interface DashboardStat {
-  id: string|number;
+  id: string;
   title: string;
   value: string | number;
   badge?: string;
-  badgeVariant?: DashboardStatBadgeVariant;
-  icon?: React.ComponentType<{ size?: number; className?: string }>;
-  iconBg?: string;
-  iconColor?: string;
+  badgeVariant?: "green" | "blue" | "orange";
+  // icon?: React.ReactNode;
+  icon?: LucideIcon
 }
 
 export interface TopProduct {
   productId: string;
   productName: string;
-  productImage?: string | null; // note: backend typo; keep as-is
+  productImage?: string;
   quantity: number;
   revenue: number;
+}
+
+export interface TopCategory {
+  categoryId: string;
+  categoryName: string;
+  quantity: number;
+  revenue: number;
+}
+
+export interface RevenueTrendPoint {
+  label: string; // e.g. "10 AM", "Day 1", "Week 2", "09 Sep"
+  revenue: number;
+  orders?: number;
 }
 
 export interface DashboardResponse {
@@ -24,15 +49,6 @@ export interface DashboardResponse {
   completedOrder: number;
   totalRevenue: number;
   topProducts: TopProduct[];
-}
-
-export interface DashboardFilters {
-  type: "today" | "yesterday" | "this_week" | "custom";
-  startDate?: string; // YYYY-MM-DD
-  endDate?: string;   // YYYY-MM-DD
-}
-export interface DashboardChartPoint {
-  label: string; // e.g. "Jan", "2024-09-01"
-  revenue: number;
-  profit: number;
+  topCategories: TopCategory[]; // ensure backend returns this
+  revenueTrend: RevenueTrendPoint[]; // ensure backend returns this
 }

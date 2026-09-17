@@ -1,26 +1,32 @@
+// pages/DashboardPage.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import {
   fetchDashboardData,
   exportRevenueReportCsv,
   exportRevenueReportPdf,
 } from "../service/dashboardService";
-import type { DashboardFilters, DashboardResponse, DashboardStat } from "../types/dashboard";
+import type {
+  DashboardFilters,
+  DashboardResponse,
+  DashboardStat,
+  RevenueTrendPoint,
+} from "../types/dashboard";
 import DashboardStatCard from "../components/DashboardStatCard";
 import TopProductsTable from "../components/TopProductTable";
+import TopCategoriesTable from "../components/TopCategoriesTable";
+import DashboardSubscriptionCard from "../components/DashboardSubscriptionCard";
+import RevenueChart from "../components/RevenueChart";
 
 const rangeOptions: { label: string; value: DashboardFilters["type"] }[] = [
   { label: "Today", value: "today" },
   { label: "Yesterday", value: "yesterday" },
   { label: "This Week", value: "this_week" },
+  { label: "This Month", value: "this_month" },
   { label: "Custom", value: "custom" },
 ];
 
 const DashboardPage: React.FC = () => {
-
-  const [filters, setFilters] = useState<DashboardFilters>({
-    type: "today",
-  });
-
+  const [filters, setFilters] = useState<DashboardFilters>({ type: "today" });
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
@@ -32,11 +38,7 @@ const DashboardPage: React.FC = () => {
     if (filters.type !== "custom") {
       return { type: filters.type };
     }
-    return {
-      type: "custom",
-      startDate,
-      endDate,
-    };
+    return { type: "custom", startDate, endDate };
   }, [filters.type, startDate, endDate]);
 
   useEffect(() => {
@@ -47,22 +49,15 @@ const DashboardPage: React.FC = () => {
       setError(null);
       try {
         const result = await fetchDashboardData(resolvedFilters);
-        if (!cancelled) {
-          setData(result);
-        }
+        if (!cancelled) setData(result);
       } catch {
-        if (!cancelled) {
-          setError("Failed to load dashboard data");
-        }
+        if (!cancelled) setError("Failed to load dashboard data");
       } finally {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       }
     }
 
     load();
-
     return () => {
       cancelled = true;
     };
@@ -76,61 +71,64 @@ const DashboardPage: React.FC = () => {
     }
   };
 
-  const handleExportCsv = () => {
-    exportRevenueReportCsv(resolvedFilters);
-  };
-
-  const handleExportPdf = () => {
-    exportRevenueReportPdf(resolvedFilters);
-  };
-
-  // Build stats for cards
   const stats: DashboardStat[] = useMemo(() => {
     if (!data) return [];
-
     return [
       {
         id: "total_orders",
         title: "Total Orders",
-        value: data.totalOrder,
-        badge: undefined,
+        value: data.totalOrder.toLocaleString(),
         badgeVariant: "blue",
       },
       {
         id: "completed_orders",
         title: "Completed Orders",
-        value: data.completedOrder,
-        badge: undefined,
+        value: data.completedOrder.toLocaleString(),
         badgeVariant: "green",
       },
       {
         id: "total_revenue",
         title: "Total Revenue",
         value: `₹${data.totalRevenue.toLocaleString()}`,
-        badge: undefined,
         badgeVariant: "orange",
       },
     ];
   }, [data]);
 
+  const chartData: RevenueTrendPoint[] = useMemo(() => {
+    return data?.revenueTrend ?? [];
+  }, [data]);
+
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
+      <h1 className="text-2xl font-extrabold tracking-[-0.02em] text-[#151826]">
+        Dashboard
+      </h1>
+
       {/* Filters + Export */}
       <section className="flex flex-col gap-3 rounded-2xl border border-[#ECECF3] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Range dropdown */}
         <div className="flex flex-wrap items-center gap-2">
-          {rangeOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => handleRangeTypeChange(opt.value)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                filters.type === opt.value
-                  ? "bg-[#1F27FF] text-white"
-                  : "bg-[#F5F6FA] text-[#4B5068] hover:bg-[#EBECF5]"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+          <label className="text-sm font-medium text-[#4B5068]">Range:</label>
+          <select
+            value={filters.type}
+            onChange={(e) =>
+              handleRangeTypeChange(e.target.value as DashboardFilters["type"])
+            }
+            className="rounded-xl border border-[#E2E4EF] bg-white px-3 py-2 text-sm text-[#1F2937] focus:border-[#1F27FF] focus:outline-none"
+          >
+            {[
+              { label: "Today", value: "today" },
+              { label: "Yesterday", value: "yesterday" },
+              { label: "This Week", value: "this_week" },
+              { label: "This Month", value: "this_month" },
+              { label: "Custom", value: "custom" },
+            ].map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
 
           {filters.type === "custom" && (
             <div className="flex items-center gap-2">
@@ -151,15 +149,16 @@ const DashboardPage: React.FC = () => {
           )}
         </div>
 
+        {/* Export buttons (unchanged) */}
         <div className="flex items-center gap-2">
           <button
-            onClick={handleExportCsv}
+            onClick={() => exportRevenueReportCsv(resolvedFilters)}
             className="rounded-xl bg-[#F5F6FA] px-4 py-2 text-sm font-semibold text-[#1F27FF] transition hover:bg-[#EBECF5]"
           >
             Export CSV
           </button>
           <button
-            onClick={handleExportPdf}
+            onClick={() => exportRevenueReportPdf(resolvedFilters)}
             className="rounded-xl bg-[#1F27FF] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1820EA]"
           >
             Export PDF
@@ -168,31 +167,45 @@ const DashboardPage: React.FC = () => {
       </section>
 
       {/* Stats */}
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-12">
+      <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {loading && !data ? (
-          <div className="xl:col-span-12 text-sm text-[#6B7280]">Loading stats...</div>
+          <div className="text-sm text-[#6B7280]">Loading stats...</div>
         ) : error ? (
-          <div className="xl:col-span-12 text-sm text-red-600">{error}</div>
+          <div className="text-sm text-red-600">{error}</div>
         ) : (
           stats.map((item) => (
-            <div key={item.id} className="xl:col-span-4">
+            <div key={item.id}>
               <DashboardStatCard item={item} />
             </div>
           ))
         )}
       </section>
 
+      {/* Chart + Subscription */}
+      <section className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <RevenueChart data={chartData} loading={loading} />
+        </div>
+        <div className="lg:col-span-1">
+          <DashboardSubscriptionCard />
+        </div>
+      </section>
+
       {/* Top Products */}
-      <section className="mt-5">
+      <section>
         {loading && !data ? (
           <div className="text-sm text-[#6B7280]">Loading top products...</div>
         ) : (
-          <TopProductsTable
-            products={data?.topProducts ?? []}
-            // onViewAll={() => navigate("/dashboard/orders")}
-          />
+          <TopProductsTable products={data?.topProducts ?? []} />
         )}
       </section>
+
+      {/* Top Categories */}
+      {data?.topCategories && data.topCategories.length > 0 ? (
+        <section>
+          <TopCategoriesTable categories={data.topCategories} />
+        </section>
+      ) : null}
     </div>
   );
 };

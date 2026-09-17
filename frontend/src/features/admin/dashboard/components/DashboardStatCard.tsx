@@ -1,3 +1,4 @@
+// components/DashboardStatCard.tsx
 import React from "react";
 import type { DashboardStat } from "../types/dashboard";
 import DashboardSectionCard from "./DashboardSectionCard";
@@ -6,7 +7,10 @@ interface DashboardStatCardProps {
   item: DashboardStat;
 }
 
-const badgeClasses: Record<NonNullable<DashboardStat["badgeVariant"]>, string> = {
+const badgeClasses: Record<
+  NonNullable<DashboardStat["badgeVariant"]>,
+  string
+> = {
   green: "bg-[#E7F8EC] text-[#2FAA61]",
   blue: "bg-[#EEF0FF] text-[#4F5BFF]",
   orange: "bg-[#FFF1E7] text-[#EB8A37]",
@@ -26,9 +30,10 @@ const DashboardStatCard: React.FC<DashboardStatCardProps> = ({ item }) => {
     <DashboardSectionCard className="p-5 sm:p-6">
       <div className="flex items-start justify-between">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F3F4F8]">
-          {/* Optional: render item.icon if provided */}
+          {item.icon ?? (
+            <div className="h-5 w-5 rounded-full bg-[#D0D3E6]" />
+          )}
         </div>
-
         {badge}
       </div>
 

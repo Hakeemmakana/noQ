@@ -1,9 +1,9 @@
 import React from "react";
-import type { DashboardChartPoint } from "../types/dashboard";
+// import type { DashboardChartPoint } from "../types/dashboard";
 import DashboardSectionCard from "./DashboardSectionCard";
 
 interface DashboardChartCardProps {
-  chartData: DashboardChartPoint[];
+  chartData: any[];
   loading?: boolean;
 }
 
